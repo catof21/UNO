@@ -10,7 +10,7 @@
 
 #define MAX_MSG 100 //Ez itt a max message
 #define LINE_ARRAY_SIZE (MAX_MSG+1)
-
+//masodik tesz komment
 using namespace std;
 
 int main()
