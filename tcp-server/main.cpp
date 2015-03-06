@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#define MAX_MSG 100
+#define MAX_MSG 100 //Ez itt a max message
 #define LINE_ARRAY_SIZE (MAX_MSG+1)
 
 using namespace std;
