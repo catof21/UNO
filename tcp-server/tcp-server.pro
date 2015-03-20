@@ -1,10 +1,16 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
-CONFIG -= qt
 
-SOURCES += main.cpp
+QT += network
+QT += core
+
+SOURCES += main.cpp \
+    gameserver.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
+
+HEADERS += \
+    gameserver.h
 
