@@ -12,13 +12,13 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_CORE_LIB
+DEFINES       = -DQT_NETWORK_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIE $(DEFINES)
 CXXFLAGS      = -pipe -g -Wall -W -D_REENTRANT -fPIE $(DEFINES)
-INCPATH       = -I/opt/Qt5.3.2/5.3/gcc/mkspecs/linux-g++ -I../tcp-client -I/opt/Qt5.3.2/5.3/gcc/include -I/opt/Qt5.3.2/5.3/gcc/include/QtCore -I. -I.
+INCPATH       = -I/opt/Qt5.3.2/5.3/gcc/mkspecs/linux-g++ -I../tcp-client -I/opt/Qt5.3.2/5.3/gcc/include -I/opt/Qt5.3.2/5.3/gcc/include/QtNetwork -I/opt/Qt5.3.2/5.3/gcc/include/QtCore -I. -I.
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.3.2/5.3/gcc -Wl,-rpath,/opt/Qt5.3.2/5.3/gcc/lib
-LIBS          = $(SUBLIBS) -L/opt/Qt5.3.2/5.3/gcc/lib -lQt5Core -lpthread 
+LIBS          = $(SUBLIBS) -L/opt/Qt5.3.2/5.3/gcc/lib -lQt5Network -lQt5Core -lpthread 
 AR            = ar cqs
 RANLIB        = 
 QMAKE         = /opt/Qt5.3.2/5.3/gcc/bin/qmake
@@ -45,8 +45,11 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ../tcp-client/main.cpp 
-OBJECTS       = main.o
+SOURCES       = ../tcp-client/main.cpp \
+		../tcp-client/cli_socket.cpp moc_cli_socket.cpp
+OBJECTS       = main.o \
+		cli_socket.o \
+		moc_cli_socket.o
 DIST          = /opt/Qt5.3.2/5.3/gcc/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.3.2/5.3/gcc/mkspecs/common/shell-unix.conf \
 		/opt/Qt5.3.2/5.3/gcc/mkspecs/common/unix.conf \
@@ -152,7 +155,8 @@ DIST          = /opt/Qt5.3.2/5.3/gcc/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.3.2/5.3/gcc/mkspecs/features/exceptions.prf \
 		/opt/Qt5.3.2/5.3/gcc/mkspecs/features/yacc.prf \
 		/opt/Qt5.3.2/5.3/gcc/mkspecs/features/lex.prf \
-		../tcp-client/tcp-client.pro ../tcp-client/main.cpp
+		../tcp-client/tcp-client.pro ../tcp-client/main.cpp \
+		../tcp-client/cli_socket.cpp
 QMAKE_TARGET  = tcp-client
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = tcp-client
@@ -291,6 +295,7 @@ Makefile: ../tcp-client/tcp-client.pro /opt/Qt5.3.2/5.3/gcc/mkspecs/linux-g++/qm
 		/opt/Qt5.3.2/5.3/gcc/mkspecs/features/yacc.prf \
 		/opt/Qt5.3.2/5.3/gcc/mkspecs/features/lex.prf \
 		../tcp-client/tcp-client.pro \
+		/opt/Qt5.3.2/5.3/gcc/lib/libQt5Network.prl \
 		/opt/Qt5.3.2/5.3/gcc/lib/libQt5Core.prl
 	$(QMAKE) -spec linux-g++ CONFIG+=debug -o Makefile ../tcp-client/tcp-client.pro
 /opt/Qt5.3.2/5.3/gcc/mkspecs/features/spec_pre.prf:
@@ -399,6 +404,7 @@ Makefile: ../tcp-client/tcp-client.pro /opt/Qt5.3.2/5.3/gcc/mkspecs/linux-g++/qm
 /opt/Qt5.3.2/5.3/gcc/mkspecs/features/yacc.prf:
 /opt/Qt5.3.2/5.3/gcc/mkspecs/features/lex.prf:
 ../tcp-client/tcp-client.pro:
+/opt/Qt5.3.2/5.3/gcc/lib/libQt5Network.prl:
 /opt/Qt5.3.2/5.3/gcc/lib/libQt5Core.prl:
 qmake: FORCE
 	@$(QMAKE) -spec linux-g++ CONFIG+=debug -o Makefile ../tcp-client/tcp-client.pro
@@ -407,7 +413,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/tcp-client1.0.0 || mkdir -p .tmp/tcp-client1.0.0
-	$(COPY_FILE) --parents $(DIST) .tmp/tcp-client1.0.0/ && $(COPY_FILE) --parents ../tcp-client/main.cpp .tmp/tcp-client1.0.0/ && (cd `dirname .tmp/tcp-client1.0.0` && $(TAR) tcp-client1.0.0.tar tcp-client1.0.0 && $(COMPRESS) tcp-client1.0.0.tar) && $(MOVE) `dirname .tmp/tcp-client1.0.0`/tcp-client1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/tcp-client1.0.0
+	$(COPY_FILE) --parents $(DIST) .tmp/tcp-client1.0.0/ && $(COPY_FILE) --parents ../tcp-client/cli_socket.h .tmp/tcp-client1.0.0/ && $(COPY_FILE) --parents ../tcp-client/main.cpp ../tcp-client/cli_socket.cpp .tmp/tcp-client1.0.0/ && (cd `dirname .tmp/tcp-client1.0.0` && $(TAR) tcp-client1.0.0.tar tcp-client1.0.0 && $(COMPRESS) tcp-client1.0.0.tar) && $(MOVE) `dirname .tmp/tcp-client1.0.0`/tcp-client1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/tcp-client1.0.0
 
 
 clean:compiler_clean 
@@ -430,8 +436,82 @@ check: first
 
 compiler_rcc_make_all:
 compiler_rcc_clean:
-compiler_moc_header_make_all:
+compiler_moc_header_make_all: moc_cli_socket.cpp
 compiler_moc_header_clean:
+	-$(DEL_FILE) moc_cli_socket.cpp
+moc_cli_socket.cpp: /opt/Qt5.3.2/5.3/gcc/include/QtCore/QObject \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobjectdefs.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qnamespace.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qglobal.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qconfig.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qfeatures.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsystemdetection.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qprocessordetection.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcompilerdetection.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtypeinfo.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtypetraits.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsysinfo.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlogging.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qflags.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qbasicatomic.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_bootstrap.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qgenericatomic.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_msvc.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_armv7.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_armv6.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_armv5.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_ia64.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_mips.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_x86.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_cxx11.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_gcc.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_unix.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qglobalstatic.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmutex.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qnumeric.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstring.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qchar.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qbytearray.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qrefcount.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qarraydata.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringbuilder.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlist.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qalgorithms.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qiterator.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcoreevent.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qscopedpointer.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmetatype.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvarlengtharray.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontainerfwd.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qisenum.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject_impl.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/QTcpSocket \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/qtcpsocket.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qiodevice.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdebug.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qhash.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpair.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmap.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtextstream.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlocale.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvariant.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringlist.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdatastream.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qregexp.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringmatcher.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qshareddata.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvector.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpoint.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qset.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontiguouscache.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/QDebug \
+		../tcp-client/cli_socket.h
+	/opt/Qt5.3.2/5.3/gcc/bin/moc $(DEFINES) -I/opt/Qt5.3.2/5.3/gcc/mkspecs/linux-g++ -I/home/cat/Coder/uno/tcp-client -I/opt/Qt5.3.2/5.3/gcc/include -I/opt/Qt5.3.2/5.3/gcc/include/QtNetwork -I/opt/Qt5.3.2/5.3/gcc/include/QtCore -I. ../tcp-client/cli_socket.h -o moc_cli_socket.cpp
+
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
 compiler_yacc_decl_make_all:
@@ -440,12 +520,138 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: 
+compiler_clean: compiler_moc_header_clean 
 
 ####### Compile
 
-main.o: ../tcp-client/main.cpp 
+main.o: ../tcp-client/main.cpp /opt/Qt5.3.2/5.3/gcc/include/QtCore/QCoreApplication \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcoreapplication.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qglobal.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qconfig.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qfeatures.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsystemdetection.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qprocessordetection.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcompilerdetection.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtypeinfo.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtypetraits.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsysinfo.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlogging.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qflags.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qbasicatomic.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_bootstrap.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qgenericatomic.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_msvc.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_armv7.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_armv6.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_armv5.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_ia64.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_mips.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_x86.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_cxx11.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_gcc.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_unix.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qglobalstatic.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmutex.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qnumeric.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstring.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qchar.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qbytearray.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qrefcount.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qnamespace.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qarraydata.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringbuilder.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobjectdefs.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlist.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qalgorithms.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qiterator.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcoreevent.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qscopedpointer.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmetatype.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvarlengtharray.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontainerfwd.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qisenum.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject_impl.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qeventloop.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../tcp-client/main.cpp
+
+cli_socket.o: ../tcp-client/cli_socket.cpp ../tcp-client/cli_socket.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/QObject \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobjectdefs.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qnamespace.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qglobal.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qconfig.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qfeatures.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsystemdetection.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qprocessordetection.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcompilerdetection.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtypeinfo.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtypetraits.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsysinfo.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlogging.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qflags.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qbasicatomic.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_bootstrap.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qgenericatomic.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_msvc.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_armv7.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_armv6.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_armv5.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_ia64.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_mips.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_x86.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_cxx11.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_gcc.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qatomic_unix.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qglobalstatic.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmutex.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qnumeric.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstring.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qchar.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qbytearray.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qrefcount.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qarraydata.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringbuilder.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlist.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qalgorithms.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qiterator.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcoreevent.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qscopedpointer.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmetatype.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvarlengtharray.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontainerfwd.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qisenum.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject_impl.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/QTcpSocket \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/qtcpsocket.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qiodevice.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdebug.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qhash.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpair.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmap.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtextstream.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlocale.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvariant.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringlist.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdatastream.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qregexp.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringmatcher.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qshareddata.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvector.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpoint.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qset.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontiguouscache.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/QDebug
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o cli_socket.o ../tcp-client/cli_socket.cpp
+
+moc_cli_socket.o: moc_cli_socket.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_cli_socket.o moc_cli_socket.cpp
 
 ####### Install
 

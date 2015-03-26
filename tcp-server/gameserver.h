@@ -5,10 +5,7 @@
 #include <QDebug>
 #include <QTcpServer>
 #include <QTcpSocket>
-#include "mythread.h"
-
-
-class QNetworkSession;
+#include <iostream>
 
 class GameServer : public QTcpServer
 {
@@ -20,13 +17,14 @@ public:
 signals:
 
 private slots:
-    void SessionOpened();
-    void sendCard();
+    void newConnection();
+
 
 private:
-    QNetworkSession *networkSession;
-    QStringList cards;
-//    QTcpServer *tcpServer;
+//    QNetworkSession *networkSession;
+//    QStringList cards;
+    QTcpServer *server;
+
 
 //protected:
 //    void incomingConnection(qintptr socketDescriptor);
