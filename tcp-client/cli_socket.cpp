@@ -13,12 +13,12 @@ void cli_socket::Connect()
     std::cout << "Enter the port for connection: ";
     std::cin >> clientport;
     socket->connectToHost("127.0.0.1",clientport);
-    if(socket->waitForConnected(30000))
+    if(socket->waitForConnected(3000))
     {
         qDebug() << "Connected";
         socket->write("start");
         socket->flush();
-        socket->waitForBytesWritten(10000);
+        socket->waitForBytesWritten(1000);
     } else {
         qDebug() << "Not connected";
     }
@@ -29,14 +29,14 @@ void cli_socket::Connect()
         while(servermove!="close");
         {
             char move[9];
-            socket->waitForReadyRead(30000);
+            socket->waitForReadyRead(3000);
             servermove=socket->readLine();
             qDebug()<<servermove;
             std::cout<<"Enter move: ";
             std::cin>>move;
             socket->write(move);
             socket->flush();
-            socket->waitForBytesWritten(10000);
+            socket->waitForBytesWritten(1000);
         }
     }
     socket->close();

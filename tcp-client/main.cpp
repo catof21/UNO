@@ -1,10 +1,11 @@
-#include <QtCore/QCoreApplication>
-#include "cli_socket.h"
+#include "mainwindow.h"
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
-    cli_socket Csocket;
-    Csocket.Connect();
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
+
     return a.exec();
 }

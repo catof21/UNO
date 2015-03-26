@@ -1,12 +1,9 @@
-#include <QtCore/QCoreApplication>
-#include "gameserver.h"
-
-
+#include <QCoreApplication>
+#include "myserver.h"
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    GameServer server;
+    myserver Server;
+    Server.StartServer();
     return a.exec();
-
-
 }
