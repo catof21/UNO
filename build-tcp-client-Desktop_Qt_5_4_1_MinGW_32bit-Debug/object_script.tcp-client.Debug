@@ -1,0 +1,12 @@
+INPUT(
+./debug\main.o
+./debug\cli_socket.o
+./debug\startdialog.o
+./debug\mainwindow.o
+./debug\card.o
+./debug\menu.o
+./debug\table.o
+./debug\moc_cli_socket.o
+./debug\moc_startdialog.o
+./debug\moc_mainwindow.o
+);

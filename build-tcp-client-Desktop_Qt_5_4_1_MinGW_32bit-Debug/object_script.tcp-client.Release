@@ -1,0 +1,12 @@
+INPUT(
+./release\main.o
+./release\cli_socket.o
+./release\startdialog.o
+./release\mainwindow.o
+./release\card.o
+./release\menu.o
+./release\table.o
+./release\moc_cli_socket.o
+./release\moc_startdialog.o
+./release\moc_mainwindow.o
+);

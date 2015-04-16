@@ -19,12 +19,18 @@ TEMPLATE = app
 SOURCES += main.cpp \
     cli_socket.cpp \
     startdialog.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    card.cpp \
+    menu.cpp \
+    table.cpp
 
 HEADERS += \
     cli_socket.h \
     startdialog.h \
-    mainwindow.h
+    mainwindow.h \
+    card.h \
+    menu.h \
+    table.h
 
 FORMS += \
     mainwindow.ui \
