@@ -23,7 +23,7 @@ void cli_socket::Connect()
         qDebug() << "Not connected";
     }
     socket->waitForReadyRead(1000);
-    if(socket->readLine()=="start")
+    if(socket->readLine()=="start\n")
     {
         QString servermove="something";
         while(servermove!="close");

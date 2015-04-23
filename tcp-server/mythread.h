@@ -10,16 +10,18 @@
 #include <qtimer.h>
 #include "frameData.h"
 #include "threadFrame.h"
+#include "table.h"
 using namespace::std;
 
 class mythread : public QThread
 {
     Q_OBJECT
 public:
-    explicit mythread(QMutex *lk, int *frm, int ID,QLinkedList<frameData> *dat,QLinkedList<threadFrame> *list, QObject *parent = 0);
+    explicit mythread(QMutex *lk, int *frm, int ID,QLinkedList<frameData> *dat,QLinkedList<threadFrame> *list, Table *t, QObject *parent = 0);
     void run();
     //QLinkedList<Data> data;
    // QLinkedList<User> users;
+
 
 
 signals:
@@ -41,6 +43,7 @@ private:
     QLinkedList<threadFrame> *sysFrameList;
     int frame;
     int *sysFrame;
+    Table *table;
     QString name;
     QMutex *lock;
 

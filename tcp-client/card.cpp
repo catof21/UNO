@@ -1,4 +1,6 @@
 #include "card.h"
+#include <QtDebug>
+using namespace::std;
 
 Card::Card()
 {
@@ -10,29 +12,47 @@ Card::~Card()
 
 }
 
-char Card::getNumber()
+QChar Card::getNumber()
 {
     return number;
 }
 
-char Card::getColor()
+QChar Card::getColor()
 {
     return color;
 }
 
-void Card::setNumber(char n)
+QChar Card::getColor2()
+{
+    return color2;
+}
+
+void Card::setNumber(QChar n)
 {
     number =n;
 }
 
-void Card::setColor(char c)
+void Card::setColor(QChar c)
 {
     color =c;
 }
 
-void Card::Print()
+void Card::setColor2(QChar c2)
 {
-    std::cout<<color<<number;
+    color2 =c2;
 }
 
+void Card::Print()
+{
+    qDebug() << color << number;
+//    std::cout<<color<<number;
+}
+
+QString Card::Send()
+{
+    QString str;
+    str.append(color);
+    str.append(number);
+    return str;
+}
 

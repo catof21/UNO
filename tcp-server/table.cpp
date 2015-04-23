@@ -1,4 +1,5 @@
 #include "table.h"
+#include "QString"
 
 #define RANDOM_INTREVAL 4500;
 #define DIRSTRIBUTED_CARD 7;
@@ -11,6 +12,7 @@ Table::Table()
     char numbers[13]={'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'S', 'D', 'R'};
                                             //feltöltjük a lapok lehetséges értékeivel, hogy innen adhassunk értéket a lakop attributumának a példányosítás során
     char color[4]={'R', 'G', 'B', 'Y'};     //feltöltjük a lapok lehetséges színeivel, hogy innen adhassunk értékel a lakop attributumának a példányosítás során
+
     for(int i=0; i<4; i++){                  //beállítja a pédányosításhoz a színt
         for(int j=0; j<13; j++){            //0-tol R-ig innen kapja a számot a lap
             Card c;                             //példányost egy kértyalapot
@@ -65,8 +67,11 @@ Table::Table()
     numberOfDrawCards=1;
     action = false;
 
-    delete numbers;
-    delete color;
+
+
+//    delete numbers;
+//    delete color;
+    std::cout << " kileptt a tabla";
 }
 
 Table::~Table()
@@ -107,7 +112,7 @@ void Table::ShuffleDrawDeck()
 void Table::Draw()
 {
     for(unsigned i=0; i<numberOfDrawCards; i++){        //annyiszor fut le, ahány lapot kell húznia a soron következő játékosnak
-        std::cout<<"Beleptem a Draw() fuggvenybe"<<std::endl;
+//        qDebug() <<"Beleptem a Draw() fuggvenybe"
        /* Card d;
         int i = drawDeck.size();
         std::cout<<i<<std::endl;
@@ -118,7 +123,7 @@ void Table::Draw()
     }
     numberOfDrawCards=1;                                //visszaállítja a húzando lapok számát 1-re
     action = false;                                     //vissazállítja az akciólap változót hamisra
-    PrintTable();                                       //kilistázza az asztal tertelmát
+//    PrintTable();                                       //kilistázza az asztal tertelmát
 }
 
 void Table::PlayClient()
@@ -298,4 +303,21 @@ void Table::PrintTable(){
     }
     std::cout<<std::endl;
     std::cout<<std::endl;
+}
+
+
+QString Table::Send(){
+    QString data;
+    data.clear();
+    data.append(playedCard.getNumber());
+    data.append(playedCard.getColor());
+    data.append(playedCard.getColor2());
+    std::list<Card>::iterator i = Hand.begin();
+    for(std::list<Card>::iterator i = Hand.begin(); i != Hand.end(); i++){
+        Card c = *i;
+        data.append(c.getNumber());
+        data.append(c.getColor());
+        data.append(c.getColor2());
+    }
+    return data;
 }

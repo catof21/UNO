@@ -9,6 +9,7 @@
 #include "mythread.h"
 #include "threadFrame.h"
 #include "frameData.h"
+#include "table.h"
 class myserver : public QTcpServer
 {
     Q_OBJECT
@@ -28,6 +29,7 @@ protected:
 private:
     QTimer *timer;
     QMutex *lock;
+//    Table *table;
 
 };
 

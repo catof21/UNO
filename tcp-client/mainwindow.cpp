@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "startdialog.h"
 #include <qthread.h>
+#include "table.h"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -12,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     serverAddr = new QString;
     serverPort = new int;
     userName = new QString;
+    table = new Table;
     startDialog start(serverAddr, serverPort, userName,this);
     start.setModal(true);
     start.exec();
@@ -33,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
     socket = new QTcpSocket(this);
    connect(socket, SIGNAL(connected()), this, SLOT(clientConnected()));
    connect(socket,SIGNAL(readyRead()),this,SLOT(readyRead()));
+//    connect(socket,SIGNAL(readyRead()),this,SLOT(readyRead()));
   // connect(socket, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
  //  connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(handleSocketError(QAbstractSocket::SocketError)));
    socket->connectToHost(*serverAddr,*serverPort);
@@ -45,6 +48,7 @@ MainWindow::~MainWindow()
     delete serverPort;
     delete userName;
     delete socket;
+    delete table;
 }
 
 
@@ -116,7 +120,32 @@ void MainWindow::readyRead()
 {
 // handle the readyRead signal
    QString tempString = socket->readAll();
-   ui->textBrowser->append(tempString);
+
+   if (tempString != "ACK") {
+          table->playedCard.setNumber(tempString.at(0));
+          table->playedCard.setColor(tempString.at(1));
+          table->playedCard.setColor2(tempString.at(2));
+          qDebug() << tempString.at(0);
+          qDebug() << tempString.at(1);
+          qDebug() << tempString.at(2);
+          qDebug() << tempString.at(3);
+          qDebug() << tempString.at(4);
+          ui->textBrowser->append("Hívó lap:");
+          ui->textBrowser->append(table->playedCard.Send().toUtf8());
+          ui->textBrowser->append("\nKézben lévő lapok:");
+          Card c;
+           for(int i=3;i<24;i=i+3) {
+               c.setNumber(tempString.at(i));
+               c.setColor(tempString.at(i+1));
+               c.setColor2(tempString.at(i+2));
+               table->Hand.push_back(c);
+               ui->textBrowser->append(c.Send().toUtf8());
+           }
+
+   } else {
+    ui->textBrowser->append(tempString);
+   }
+   qDebug() << "readyread" << tempString;
    ui->textBrowser->repaint();
 }
 void MainWindow::on_pushButton_clicked()
@@ -131,7 +160,12 @@ void MainWindow::on_pushButton_clicked()
     // socket->waitForReadyRead();
     //socket->flush();
     //stuff=socket->readAll();
-    //stuff=socket->readAll();
+    stuff=socket->readAll();
+
+    //table->playedCard.setNumber(tempString.at(0));
+//    qDebug() << "temp" << temp;
+//    qDebug() << "onpush.stuff" << stuff;
+
 
     //ready to send
     socket->write(temp.toUtf8());

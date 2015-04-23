@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <list>
+#include "QString"
 
 #include <ctime>
 #include <cstdlib>
@@ -32,6 +33,8 @@ public:
     void Deal();
     void SayUno();
     void PrintTable();
+    QString Send();
+
 };
 
 #endif // TABLE_H

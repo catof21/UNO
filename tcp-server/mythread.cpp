@@ -1,7 +1,10 @@
 #include "mythread.h"
+#include "myserver.h"
+#include "table.h"
+
 QMutex lock;
 
-mythread::mythread(QMutex *lk, int *frm, int ID,QLinkedList<frameData> *dat,QLinkedList<threadFrame> *list, QObject *parent) :
+mythread::mythread(QMutex *lk, int *frm, int ID,QLinkedList<frameData> *dat,QLinkedList<threadFrame> *list, Table *t, QObject *parent) :
 QThread(parent)
 {
     this->socketDescriptor = ID;
@@ -9,6 +12,7 @@ QThread(parent)
     this->sysFrameList = list;
     this->frame = *frm;
     this->sysFrame = frm;
+    this->table = t;
     this->lock = lk;
 }
 
@@ -60,49 +64,6 @@ void mythread::readyRead()
 
 
 
-    //for individual messaging registration.... old code.
-    /*if (stuff == "REG\n") //client would like to register. next message should be username
-    {//need to add check to see if user exists
-        socket->write("ACK");//this is a hard ack that tells the client that it may write to the socket and be heard by the server.
-        socket->flush();
-        stuff.clear(); //verify that buffer is cleared.
-        socket->waitForReadyRead();
-        stuff=socket->readAll();//should have username followed by \n
-        stuffText = stuff; //move it to a string so that I can manually remove the \n and then add it to the users list.
-        stuffText.remove('\n'); //hopefully removes the \n
-        //Need to check to see if users already exists.
-        for(Uit=users->begin();Uit!=users->end();Uit++)
-        {
-            testName = Uit->getName();
-            if(testName == stuffText) //if this is true, then the user exists and we need to act on it
-            {
-                socket->write("user already exists");
-                socket->flush();
-                socket->close();
-                flag=1;
-                break;
-            }
-        }
-        //now to add to the user list, completing the register process.
-        if(!flag) //this way the user doesn't get double added if the user name matched.
-        {
-            temp.setName(stuffText);
-            temp.setDescriptor(this->socketDescriptor);//temp user configured. time to add
-            lock.lock();
-            users->append(temp);
-            lock.unlock();
-            //clean up
-            stuff.clear();
-            stuffText.clear();
-            temp.clear();
-            stuff="ACK";
-            socket->write("ACK");
-            socket->flush();
-        }
-        flag=0;
-        stuff.clear();
-    }
-    */
     if(stuff=="REG\n") // set client username internal to the thread. No need to do much else.
     {
         socket->write("ACK");
@@ -119,21 +80,6 @@ void mythread::readyRead()
     } //done...... much easier than before... wow.
 
 
-    if(stuff=="REGJ\n") // set client username internal to the thread. No need to do much else.
-    {
-        socket->write("ACK\n");
-        socket->flush();
-        //socket->flush();
-        socket->waitForReadyRead();
-        stuff=socket->readAll();
-        name=stuff;
-        if(-1==socket->write("ACK\n"))//to finalize name registration.
-        {
-                qDebug() << "error2";
-        }
-        socket->flush();
-    }
-
     if(stuff=="MSG\n") //client would like to send a message.
     {
 
@@ -143,13 +89,32 @@ void mythread::readyRead()
         socket->waitForReadyRead();
         stuff=socket->readAll();
         //socket->waitForReadyRead();
-        qDebug() << stuff;
         msgTemp.clear();
+        qDebug() << stuff;
+        QString str;
+        str.clear();
+        char *command = stuff.data();
+        char cmd[stuff.length()];
+        int i=0;
+        while (*command) {
+                cmd[i] = *command;
+                if (cmd[i] == 'O') {
+                    qDebug() << cmd[i] << "osztas";
+//                    table->Deal();
+                    str.append(table->Send());
+                    msgTemp.append(str);
+                    }
+            ++command;
+            ++i;
+        }
+
+/*        msgTemp.clear();
         msgTemp = '<';
         msgTemp.append(name);
         msgTemp.append(">: ");
         msgTemp.append(stuff);
         msgTemp.append('\n');
+*/
         lock->lock(); //I'm messing with the shared memory here... make sure to lock
         tempData.setData(msgTemp.toUtf8());
         tempData.setFrame(*sysFrame);

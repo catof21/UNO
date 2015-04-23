@@ -3,6 +3,7 @@
 #include <QTcpSocket>
 #include <QMainWindow>
 #include <qtimer.h>
+#include <table.h>
 
 
 namespace Ui {
@@ -32,6 +33,7 @@ private:
     QString *userName;
     QTcpSocket *socket;
     bool m_bUserNameSend;
+    Table *table;
 
 };
 

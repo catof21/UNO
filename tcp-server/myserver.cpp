@@ -1,7 +1,9 @@
 #include "myserver.h"
+#include "table.h"
 using namespace::std;
 QLinkedList<frameData> *data;
 QLinkedList<threadFrame> *frameList;
+Table *table;
 
 int *sysFrame;
 
@@ -25,6 +27,8 @@ void myserver::StartServer()
     data = new QLinkedList<frameData>;
     frameList = new QLinkedList<threadFrame>;
     sysFrame = new int;
+    table = new Table;
+    table->Deal();
     *sysFrame = 0;
     if(!this->listen(QHostAddress::Any,8060))
     {
@@ -39,8 +43,9 @@ void myserver::StartServer()
 void myserver::incomingConnection(int socketDescriptor)
 {
     qDebug() << socketDescriptor << "Connecting ...";
-    mythread *thread = new mythread(lock, sysFrame,socketDescriptor,data, frameList, this);
+    mythread *thread = new mythread(lock, sysFrame,socketDescriptor,data, frameList, table,this);
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+
     thread->start();
 }
 
