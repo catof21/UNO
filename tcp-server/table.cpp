@@ -1,5 +1,6 @@
 #include "table.h"
 #include "QString"
+#include <QDebug>
 
 #define RANDOM_INTREVAL 4500;
 #define DIRSTRIBUTED_CARD 7;
@@ -232,7 +233,7 @@ QString Table::Send(){
     } else {
         data.append("0");
     }
-
+    qDebug() << data;
     std::list<Card>::iterator i = Hand.begin();
     for(std::list<Card>::iterator i = Hand.begin(); i != Hand.end(); i++){
         Card c = *i;

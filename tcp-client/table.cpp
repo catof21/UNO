@@ -1,4 +1,5 @@
 #include "table.h"
+#include <QDebug>
 
 Table::Table()
 {
@@ -92,12 +93,13 @@ int Table::Play(QChar n, QChar c)
                         for(std::list<Card>::iterator i = Hand.begin(); i != Hand.end(); i++){
                             if(playedCard.getColor2()==i->getColor()){
                                 j++;
+                                qDebug() << playedCard.getColor2()<<" PH "<< i->getColor();
                             }
                           //  Card c = *i;
                           //  c.Print();
                           //  std::cout<<" ";
                         }
-                        if(j==0){
+                        if(j==0){                                    //hivott lap c2 = c
 //                            std::cout<<"válassz színt!"<<std::endl;
 //                            char c2;
 //                            std::cin>>c2;
