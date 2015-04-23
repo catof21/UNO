@@ -98,15 +98,28 @@ void mythread::readyRead()
         int i=0;
         while (*command) {
                 cmd[i] = *command;
-                if (cmd[i] == 'O') {
-                    qDebug() << cmd[i] << "osztas";
-//                    table->Deal();
-                    str.append(table->Send());
-                    msgTemp.append(str);
-                    }
-            ++command;
-            ++i;
+                ++command;
+                ++i;
         }
+        if (cmd[0] == 'U') {
+            qDebug() << "update";
+        }
+        else if (cmd[0] == 'P') {
+            qDebug() << "play";
+            table->Play(cmd[1],cmd[2],cmd[3]);
+        }
+        else if (cmd[0] == 'D'){
+            qDebug() << "draw";
+            table->Draw();
+
+        }
+        else if (cmd[0] == 'X'){
+            qDebug() << "UNO";
+
+        }
+        str.append(table->Send());
+        msgTemp.append(str);
+    }
 
 /*        msgTemp.clear();
         msgTemp = '<';
@@ -125,7 +138,7 @@ void mythread::readyRead()
         //socket->flush();
     } //much easier.
 
-}
+
 
 
     /*if (stuff == "MSG\n")

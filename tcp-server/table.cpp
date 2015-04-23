@@ -126,92 +126,7 @@ void Table::Draw()
 //    PrintTable();                                       //kilistázza az asztal tertelmát
 }
 
-void Table::PlayClient()
-{
-    if(Hand.size()!=0){
-        char c, n;                                      //létrehozza a lap színét és számát tartalmazó változókat
-        std::cout<<"A dobando lap szine:"<<std::endl;   //bekéri a dobandó lap színét
-        std::cin>>c;                                    //elmenti a lap színét
-        std::cout<<"A dobando lap szama:"<<std::endl;   //bekéri a lap számát
-        std::cin>>n;                                    //elmenti a lap számát
-        std::list<Card>::iterator j = Hand.end();       //létrehoz egy iterátort ami a keze első elemér mutat
-        std::list<Card>::iterator i = Hand.begin();     //létrehoz egy iterátort ami a keze utolsó elemér mutat
-        while(i != Hand.end()){                         //végigmegy a kézen
-            if(i->getColor()==c && i->getNumber()==n){  //ha megtalálta a lapot
-                j=i;                                    //a j-t átállítja ugy, hogy erre a lapra mutasson
-                std::cout<<"Megtalaltam a lapot"<<std::endl;
-            }
-            i++;                                        //növeli i-t
-        }
-        if(j==Hand.end()){                              //ha j a kéz végére mutat, akkor nem találta meg, azaz nincs a kezében
-            std::cout<<"Ninc silyen lap a kezedben. Kerlek adj meg masikat!"<<std::endl;
-            PlayClient();                               //újra meghívja ezt a függvényt, hogy új lapot választhasson a játék
-        }else{
-            if(action==true){                           //ha a kázbe van a alap, és az előző lap action lap volt
-                if(n==playedCard.getNumber()){          //és a szám megyegyezik a hívott lap számával
-                    if(n=='F'){                         //és a lap a joker huzz négyet
-                        int j=0;                        //akkor megnézzi, hogy  a választott színből van-e a kézben
-                        std::list<Card>::iterator i = Hand.begin();
-                        for(std::list<Card>::iterator i = Hand.begin(); i != Hand.end(); i++){
-                            if(playedCard.getColor2()==i->getColor()){
-                                j++;
-                            }
-                        }
-                        if(j==0){                       //ha nincs
-                            std::cout<<"válassz színt!"<<std::endl; //bekéri, a válsztott színt
-                            char c2;
-                            std::cin>>c2;                           //és menti
-                            Play(c, n, c2);                         //meghívja a server Play() függvényét
-                        }else{                                      //ha vana  kezünkben a választott színből, akkor nem tehetjük ki ezt a lapot
-                            std::cout<<"Nem hivhatod ki ezt a lapot, mert van a hivo szinu lapod!"<<std::endl;
-                        }
-                    }else{                                          //ha nem F, akkor további feltétel nélkül kijátszhatja a lapo
-                        Play(c, n, c);                              //meghívja a server Play() függvényét
-                    }
-                }else{                                              //ha nem megfelelő a szín, nem játszahtja kia  lapot
-                    std::cout<<"A hivott akciolapra csak ugyan olyan akciolapot tehetsz. Ha nincs nalad ilyen lap, valaszd a huzas/passz menut!"<<std::endl;
-                }
-            }else{                                                  //ha nem kell a korábbi lap utasításait betartanunk (vagy nem akciólap, vagy az előz játékosra vonatkozott
-                if(c=='W'){                                         //ha a lap joker
-                    if(n=='I'){                                     //és joker jap
-                        std::cout<<"válassz színt!"<<std::endl;     //bekéri a választott színt
-                        char c2;
-                        std::cin>>c2;                               //ezt menti
-                        Play(c, n, c2);                             //meghívja a server Play() függvényét
-                    }else{                                          //ha joker húzz négyet
-                        int j=0;
-                        std::list<Card>::iterator i = Hand.begin(); //akkor megnézzi, hogy  a választott színből van-e a kézben
-                        for(std::list<Card>::iterator i = Hand.begin(); i != Hand.end(); i++){
-                            if(playedCard.getColor2()==i->getColor()){
-                                j++;
-                            }
-                          //  Card c = *i;
-                          //  c.Print();
-                          //  std::cout<<" ";
-                        }
-                        if(j==0){
-                            std::cout<<"válassz színt!"<<std::endl;
-                            char c2;
-                            std::cin>>c2;
-                            Play(c, n, c2);
-                        }else{
-                            std::cout<<"Nem hivhatod ki ezt a lapot, mert van a hivo szinu lapod!"<<std::endl;
-                        }
-                    }
-                }else{                                              //ha nem joker lap
-                    if(playedCard.getColor2()==c || playedCard.getNumber()==n){ //megnézi, hogy a színe, vagy a száma megegyezik-e a hívott lapéval
-                        Play(c, n, c);                                          //akkor megnézzi, hogy  a választott színből van-e a kézben
-                    }else{                                                      //ha sem a szín, sem a száma nem egyezik meg, a lap nem játszható ki
-                        std::cout<<"Nem hivhatod ki ezt a lapot, mert sem a szine sem a szama nem egyezik meg a hívo lapeval!"<<std::endl;
-                    }
-                }
-            }
-        }
-    }
-    std::cout<<"jartam a PlayClient() fuggvenyben"<<std::endl;      //
-}
-
-void Table::Play(char c, char n, char c2)
+void Table::Play(QChar c, QChar n, QChar c2)
 {
     std::list<Card>::iterator j = Hand.end();           //létrehoz egy iterátort ami a keze első elemér mutat
     std::list<Card>::iterator i = Hand.begin();         //létrehoz egy iterátort ami a keze utolsó elemér mutat
@@ -312,6 +227,12 @@ QString Table::Send(){
     data.append(playedCard.getNumber());
     data.append(playedCard.getColor());
     data.append(playedCard.getColor2());
+    if (action) {
+        data.append("1");
+    } else {
+        data.append("0");
+    }
+
     std::list<Card>::iterator i = Hand.begin();
     for(std::list<Card>::iterator i = Hand.begin(); i != Hand.end(); i++){
         Card c = *i;

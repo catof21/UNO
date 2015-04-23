@@ -20,8 +20,9 @@ public:
     ~Table();
     void Print();
     void Draw();
-    void Play();
+    int Play(QChar n, QChar c);
     void SayUno();
+    bool action;
 };
 
 #endif // TABLE_H

@@ -28,7 +28,7 @@ public:
     void PrintDrawDeck();
     void ShuffleDrawDeck();
     void Draw();
-    void Play(char c, char n, char c2);
+    void Play(QChar c, QChar n, QChar c2);
     void PlayClient();
     void Deal();
     void SayUno();

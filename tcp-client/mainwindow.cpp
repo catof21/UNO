@@ -122,9 +122,17 @@ void MainWindow::readyRead()
    QString tempString = socket->readAll();
 
    if (tempString != "ACK") {
+          ui->textBrowser->clear();
+          ui->textBrowser->append("U(pdate) | P(lay) | D(raw) | X(UNO)");
           table->playedCard.setNumber(tempString.at(0));
           table->playedCard.setColor(tempString.at(1));
           table->playedCard.setColor2(tempString.at(2));
+          QChar a = tempString.at(3);
+          if ( a == '0') {
+              table->action=false;
+          } else {
+              table->action=true;
+          }
           qDebug() << tempString.at(0);
           qDebug() << tempString.at(1);
           qDebug() << tempString.at(2);
@@ -134,7 +142,7 @@ void MainWindow::readyRead()
           ui->textBrowser->append(table->playedCard.Send().toUtf8());
           ui->textBrowser->append("\nKézben lévő lapok:");
           Card c;
-           for(int i=3;i<24;i=i+3) {
+           for(int i=4;i<tempString.length();i=i+3) {
                c.setNumber(tempString.at(i));
                c.setColor(tempString.at(i+1));
                c.setColor2(tempString.at(i+2));
@@ -153,14 +161,36 @@ void MainWindow::on_pushButton_clicked()
     //user clicked the send button and would like their message to be sent. woooo.
     QString temp, stuff;
     temp=ui->lineEdit->text();
+    if (temp.at(0)=='P') {
+        QChar c=temp.at(1);
+        QChar n=temp.at(2);
+        if(table->Play(n, c)==0){                           //ha játszható
+           if (c=='W')   {
+              createMessage(temp);
+           } else {
+              createMessage(temp.append(temp.at(1)));       //ha nincs megadva második szín, akkor a lap színét teszi be másodiknak
+           }
+        }else{
+            ui->textBrowser->append("Válassz másik lapot!");  //miért nem case->
+            ui->lineEdit->clear();
+        }
+    }
+    else if ((temp.at(0)=='U') || (temp.at(0)=='D')){
+        createMessage(temp);
+    }
+
+}
+
+void MainWindow::createMessage(QString temp)
+{
     socket->write("MSG\n");
     socket->flush();
-    for(int i=0;i<10000000;i++); //wait for data to be read on server.
+    for(int i=0;i<1000000;i++); //wait for data to be read on server.
     //socket->waitForBytesWritten(3000);
-    // socket->waitForReadyRead();
+    //socket->waitForReadyRead();
     //socket->flush();
     //stuff=socket->readAll();
-    stuff=socket->readAll();
+
 
     //table->playedCard.setNumber(tempString.at(0));
 //    qDebug() << "temp" << temp;
@@ -178,7 +208,6 @@ void MainWindow::on_pushButton_clicked()
     //    ui->textBrowser->clear();
     //   ui->textBrowser->setText("Send failed. Please close client to reconnect");
     // }
-
 }
 
 
