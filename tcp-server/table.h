@@ -19,13 +19,18 @@ public:
     std::vector<Card> playDeck;
     std::list<Card> Hand;
     Card playedCard;
+    unsigned numberOfDrawCards;
+    bool action;
     Table();
     ~Table();
     void PrintDrawDeck();
     void ShuffleDrawDeck();
     void Draw();
-    void Play(char c, char n);
+    void Play(char c, char n, char c2);
+    void PlayClient();
     void Deal();
+    void SayUno();
+    void PrintTable();
 };
 
 #endif // TABLE_H

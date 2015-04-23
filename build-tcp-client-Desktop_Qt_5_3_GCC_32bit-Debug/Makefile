@@ -48,13 +48,19 @@ OBJECTS_DIR   = ./
 SOURCES       = ../tcp-client/main.cpp \
 		../tcp-client/cli_socket.cpp \
 		../tcp-client/startdialog.cpp \
-		../tcp-client/mainwindow.cpp moc_cli_socket.cpp \
+		../tcp-client/mainwindow.cpp \
+		../tcp-client/card.cpp \
+		../tcp-client/menu.cpp \
+		../tcp-client/table.cpp moc_cli_socket.cpp \
 		moc_startdialog.cpp \
 		moc_mainwindow.cpp
 OBJECTS       = main.o \
 		cli_socket.o \
 		startdialog.o \
 		mainwindow.o \
+		card.o \
+		menu.o \
+		table.o \
 		moc_cli_socket.o \
 		moc_startdialog.o \
 		moc_mainwindow.o
@@ -168,7 +174,10 @@ DIST          = /opt/Qt5.3.2/5.3/gcc/mkspecs/features/spec_pre.prf \
 		../tcp-client/tcp-client.pro ../tcp-client/main.cpp \
 		../tcp-client/cli_socket.cpp \
 		../tcp-client/startdialog.cpp \
-		../tcp-client/mainwindow.cpp
+		../tcp-client/mainwindow.cpp \
+		../tcp-client/card.cpp \
+		../tcp-client/menu.cpp \
+		../tcp-client/table.cpp
 QMAKE_TARGET  = tcp-client
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = tcp-client
@@ -433,7 +442,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/tcp-client1.0.0 || mkdir -p .tmp/tcp-client1.0.0
-	$(COPY_FILE) --parents $(DIST) .tmp/tcp-client1.0.0/ && $(COPY_FILE) --parents ../tcp-client/cli_socket.h ../tcp-client/startdialog.h ../tcp-client/mainwindow.h .tmp/tcp-client1.0.0/ && $(COPY_FILE) --parents ../tcp-client/main.cpp ../tcp-client/cli_socket.cpp ../tcp-client/startdialog.cpp ../tcp-client/mainwindow.cpp .tmp/tcp-client1.0.0/ && $(COPY_FILE) --parents ../tcp-client/mainwindow.ui ../tcp-client/startdialog.ui .tmp/tcp-client1.0.0/ && (cd `dirname .tmp/tcp-client1.0.0` && $(TAR) tcp-client1.0.0.tar tcp-client1.0.0 && $(COMPRESS) tcp-client1.0.0.tar) && $(MOVE) `dirname .tmp/tcp-client1.0.0`/tcp-client1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/tcp-client1.0.0
+	$(COPY_FILE) --parents $(DIST) .tmp/tcp-client1.0.0/ && $(COPY_FILE) --parents ../tcp-client/cli_socket.h ../tcp-client/startdialog.h ../tcp-client/mainwindow.h ../tcp-client/card.h ../tcp-client/menu.h ../tcp-client/table.h .tmp/tcp-client1.0.0/ && $(COPY_FILE) --parents ../tcp-client/main.cpp ../tcp-client/cli_socket.cpp ../tcp-client/startdialog.cpp ../tcp-client/mainwindow.cpp ../tcp-client/card.cpp ../tcp-client/menu.cpp ../tcp-client/table.cpp .tmp/tcp-client1.0.0/ && $(COPY_FILE) --parents ../tcp-client/mainwindow.ui ../tcp-client/startdialog.ui .tmp/tcp-client1.0.0/ && (cd `dirname .tmp/tcp-client1.0.0` && $(TAR) tcp-client1.0.0.tar tcp-client1.0.0 && $(COMPRESS) tcp-client1.0.0.tar) && $(MOVE) `dirname .tmp/tcp-client1.0.0`/tcp-client1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/tcp-client1.0.0
 
 
 clean:compiler_clean 
@@ -636,10 +645,10 @@ moc_startdialog.cpp: /opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QDialog \
 		../tcp-client/startdialog.h
 	/opt/Qt5.3.2/5.3/gcc/bin/moc $(DEFINES) -I/opt/Qt5.3.2/5.3/gcc/mkspecs/linux-g++ -I/home/cat/Coder/uno/tcp-client -I/opt/Qt5.3.2/5.3/gcc/include -I/opt/Qt5.3.2/5.3/gcc/include/QtWidgets -I/opt/Qt5.3.2/5.3/gcc/include/QtNetwork -I/opt/Qt5.3.2/5.3/gcc/include/QtGui -I/opt/Qt5.3.2/5.3/gcc/include/QtCore -I. ../tcp-client/startdialog.h -o moc_startdialog.cpp
 
-moc_mainwindow.cpp: /opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QMainWindow \
-		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qmainwindow.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qwidget.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qwindowdefs.h \
+moc_mainwindow.cpp: /opt/Qt5.3.2/5.3/gcc/include/QtNetwork/QTcpSocket \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/qtcpsocket.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qiodevice.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qglobal.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qconfig.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qfeatures.h \
@@ -668,11 +677,10 @@ moc_mainwindow.cpp: /opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QMainWindow \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qglobalstatic.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmutex.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qnumeric.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobjectdefs.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qnamespace.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobjectdefs_impl.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qwindowdefs_win.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstring.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qchar.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qbytearray.h \
@@ -689,22 +697,35 @@ moc_mainwindow.cpp: /opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QMainWindow \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontainerfwd.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qisenum.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject_impl.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdebug.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qhash.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpair.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmap.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtextstream.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlocale.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvariant.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringlist.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdatastream.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qregexp.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringmatcher.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qshareddata.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvector.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpoint.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qset.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontiguouscache.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QMainWindow \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qmainwindow.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qwidget.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qwindowdefs.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qwindowdefs_win.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmargins.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpaintdevice.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qrect.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsize.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpoint.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpalette.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qcolor.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qrgb.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringlist.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdatastream.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qiodevice.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpair.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qregexp.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringmatcher.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qbrush.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvector.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qmatrix.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpolygon.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qregion.h \
@@ -714,9 +735,7 @@ moc_mainwindow.cpp: /opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QMainWindow \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qimage.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpixmap.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsharedpointer.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qshareddata.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsharedpointer_impl.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qhash.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qfont.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qfontmetrics.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qfontinfo.h \
@@ -724,13 +743,6 @@ moc_mainwindow.cpp: /opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QMainWindow \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qcursor.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qkeysequence.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qevent.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvariant.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmap.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdebug.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtextstream.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlocale.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qset.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontiguouscache.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qurl.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qurlquery.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qfile.h \
@@ -739,6 +751,8 @@ moc_mainwindow.cpp: /opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QMainWindow \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qtouchdevice.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qtabwidget.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qicon.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtimer.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qbasictimer.h \
 		../tcp-client/mainwindow.h
 	/opt/Qt5.3.2/5.3/gcc/bin/moc $(DEFINES) -I/opt/Qt5.3.2/5.3/gcc/mkspecs/linux-g++ -I/home/cat/Coder/uno/tcp-client -I/opt/Qt5.3.2/5.3/gcc/include -I/opt/Qt5.3.2/5.3/gcc/include/QtWidgets -I/opt/Qt5.3.2/5.3/gcc/include/QtNetwork -I/opt/Qt5.3.2/5.3/gcc/include/QtGui -I/opt/Qt5.3.2/5.3/gcc/include/QtCore -I. ../tcp-client/mainwindow.h -o moc_mainwindow.cpp
 
@@ -764,10 +778,10 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 ####### Compile
 
 main.o: ../tcp-client/main.cpp ../tcp-client/mainwindow.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QMainWindow \
-		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qmainwindow.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qwidget.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qwindowdefs.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/QTcpSocket \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/qtcpsocket.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qiodevice.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qglobal.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qconfig.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qfeatures.h \
@@ -796,11 +810,10 @@ main.o: ../tcp-client/main.cpp ../tcp-client/mainwindow.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qglobalstatic.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmutex.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qnumeric.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobjectdefs.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qnamespace.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobjectdefs_impl.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qwindowdefs_win.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstring.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qchar.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qbytearray.h \
@@ -817,22 +830,35 @@ main.o: ../tcp-client/main.cpp ../tcp-client/mainwindow.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontainerfwd.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qisenum.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject_impl.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdebug.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qhash.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpair.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmap.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtextstream.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlocale.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvariant.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringlist.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdatastream.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qregexp.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringmatcher.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qshareddata.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvector.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpoint.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qset.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontiguouscache.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QMainWindow \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qmainwindow.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qwidget.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qwindowdefs.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qwindowdefs_win.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmargins.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpaintdevice.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qrect.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsize.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpoint.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpalette.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qcolor.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qrgb.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringlist.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdatastream.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qiodevice.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpair.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qregexp.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringmatcher.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qbrush.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvector.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qmatrix.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpolygon.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qregion.h \
@@ -842,9 +868,7 @@ main.o: ../tcp-client/main.cpp ../tcp-client/mainwindow.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qimage.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpixmap.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsharedpointer.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qshareddata.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsharedpointer_impl.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qhash.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qfont.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qfontmetrics.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qfontinfo.h \
@@ -852,13 +876,6 @@ main.o: ../tcp-client/main.cpp ../tcp-client/mainwindow.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qcursor.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qkeysequence.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qevent.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvariant.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmap.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdebug.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtextstream.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlocale.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qset.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontiguouscache.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qurl.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qurlquery.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qfile.h \
@@ -867,6 +884,8 @@ main.o: ../tcp-client/main.cpp ../tcp-client/mainwindow.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qtouchdevice.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qtabwidget.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qicon.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtimer.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qbasictimer.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QApplication \
 		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qapplication.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcoreapplication.h \
@@ -1051,14 +1070,65 @@ startdialog.o: ../tcp-client/startdialog.cpp ../tcp-client/startdialog.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qfiledevice.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qvector2d.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qtouchdevice.h \
-		ui_startdialog.h
+		ui_startdialog.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/QVariant \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QAction \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qaction.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qicon.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qactiongroup.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QApplication \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qapplication.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcoreapplication.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qeventloop.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qdesktopwidget.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qguiapplication.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qinputmethod.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QButtonGroup \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qbuttongroup.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QFormLayout \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qformlayout.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QLayout \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qlayout.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qlayoutitem.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qboxlayout.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qgridlayout.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QHeaderView \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qheaderview.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qabstractitemview.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qabstractscrollarea.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qframe.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qabstractitemmodel.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qitemselectionmodel.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qabstractitemdelegate.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qstyleoption.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qabstractspinbox.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qvalidator.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qregularexpression.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qslider.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qabstractslider.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qstyle.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qtabbar.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qtabwidget.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qrubberband.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QLabel \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qlabel.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QLineEdit \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qlineedit.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qtextcursor.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qtextformat.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpen.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qtextoption.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QPushButton \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qabstractbutton.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o startdialog.o ../tcp-client/startdialog.cpp
 
 mainwindow.o: ../tcp-client/mainwindow.cpp ../tcp-client/mainwindow.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QMainWindow \
-		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qmainwindow.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qwidget.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qwindowdefs.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/QTcpSocket \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/qtcpsocket.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qiodevice.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qglobal.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qconfig.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qfeatures.h \
@@ -1087,11 +1157,10 @@ mainwindow.o: ../tcp-client/mainwindow.cpp ../tcp-client/mainwindow.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qglobalstatic.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmutex.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qnumeric.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobjectdefs.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qnamespace.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobjectdefs_impl.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qwindowdefs_win.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstring.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qchar.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qbytearray.h \
@@ -1108,22 +1177,35 @@ mainwindow.o: ../tcp-client/mainwindow.cpp ../tcp-client/mainwindow.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontainerfwd.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qisenum.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qobject_impl.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdebug.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qhash.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpair.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmap.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtextstream.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlocale.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvariant.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringlist.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdatastream.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qregexp.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringmatcher.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qshareddata.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvector.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpoint.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qset.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontiguouscache.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QMainWindow \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qmainwindow.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qwidget.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qwindowdefs.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qwindowdefs_win.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmargins.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpaintdevice.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qrect.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsize.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpoint.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpalette.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qcolor.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qrgb.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringlist.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdatastream.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qiodevice.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qpair.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qregexp.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qstringmatcher.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qbrush.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvector.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qmatrix.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpolygon.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qregion.h \
@@ -1133,9 +1215,7 @@ mainwindow.o: ../tcp-client/mainwindow.cpp ../tcp-client/mainwindow.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qimage.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpixmap.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsharedpointer.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qshareddata.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qsharedpointer_impl.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qhash.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qfont.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qfontmetrics.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qfontinfo.h \
@@ -1143,13 +1223,6 @@ mainwindow.o: ../tcp-client/mainwindow.cpp ../tcp-client/mainwindow.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qcursor.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qkeysequence.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qevent.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qvariant.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qmap.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qdebug.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtextstream.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qlocale.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qset.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcontiguouscache.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qurl.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qurlquery.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qfile.h \
@@ -1157,8 +1230,75 @@ mainwindow.o: ../tcp-client/mainwindow.cpp ../tcp-client/mainwindow.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qvector2d.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qtouchdevice.h \
 		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qtabwidget.h \
-		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qicon.h
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qicon.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qtimer.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qbasictimer.h \
+		ui_mainwindow.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/QVariant \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QAction \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qaction.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qactiongroup.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QApplication \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qapplication.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qcoreapplication.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qeventloop.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qdesktopwidget.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qguiapplication.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qinputmethod.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QButtonGroup \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qbuttongroup.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QHeaderView \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qheaderview.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qabstractitemview.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qabstractscrollarea.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qframe.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qabstractitemmodel.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qitemselectionmodel.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qabstractitemdelegate.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qstyleoption.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qabstractspinbox.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qvalidator.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qregularexpression.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qslider.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qabstractslider.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qstyle.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qtabbar.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qrubberband.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QLineEdit \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qlineedit.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qtextcursor.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qtextformat.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qpen.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qtextoption.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QMenu \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qmenu.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QMenuBar \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qmenubar.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QPushButton \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qabstractbutton.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QTextBrowser \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qtextbrowser.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qtextedit.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtGui/qtextdocument.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QWidget \
+		../tcp-client/startdialog.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/QDialog \
+		/opt/Qt5.3.2/5.3/gcc/include/QtWidgets/qdialog.h \
+		/opt/Qt5.3.2/5.3/gcc/include/QtCore/qthread.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../tcp-client/mainwindow.cpp
+
+card.o: ../tcp-client/card.cpp ../tcp-client/card.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o card.o ../tcp-client/card.cpp
+
+menu.o: ../tcp-client/menu.cpp ../tcp-client/menu.h \
+		../tcp-client/table.h \
+		../tcp-client/card.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o menu.o ../tcp-client/menu.cpp
+
+table.o: ../tcp-client/table.cpp ../tcp-client/table.h \
+		../tcp-client/card.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o table.o ../tcp-client/table.cpp
 
 moc_cli_socket.o: moc_cli_socket.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_cli_socket.o moc_cli_socket.cpp

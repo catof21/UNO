@@ -51,7 +51,9 @@ SOURCES       = ../tcp-server/main.cpp \
 		../tcp-server/myserver.cpp \
 		../tcp-server/mythread.cpp \
 		../tcp-server/threadFrame.cpp \
-		../tcp-server/user.cpp moc_myserver.cpp \
+		../tcp-server/user.cpp \
+		../tcp-server/card.cpp \
+		../tcp-server/table.cpp moc_myserver.cpp \
 		moc_mythread.cpp
 OBJECTS       = main.o \
 		data.o \
@@ -60,6 +62,8 @@ OBJECTS       = main.o \
 		mythread.o \
 		threadFrame.o \
 		user.o \
+		card.o \
+		table.o \
 		moc_myserver.o \
 		moc_mythread.o
 DIST          = /opt/Qt5.3.2/5.3/gcc/mkspecs/features/spec_pre.prf \
@@ -174,7 +178,9 @@ DIST          = /opt/Qt5.3.2/5.3/gcc/mkspecs/features/spec_pre.prf \
 		../tcp-server/myserver.cpp \
 		../tcp-server/mythread.cpp \
 		../tcp-server/threadFrame.cpp \
-		../tcp-server/user.cpp
+		../tcp-server/user.cpp \
+		../tcp-server/card.cpp \
+		../tcp-server/table.cpp
 QMAKE_TARGET  = TCPServer
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = TCPServer
@@ -433,7 +439,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/TCPServer1.0.0 || mkdir -p .tmp/TCPServer1.0.0
-	$(COPY_FILE) --parents $(DIST) .tmp/TCPServer1.0.0/ && $(COPY_FILE) --parents ../tcp-server/data.h ../tcp-server/frameData.h ../tcp-server/myserver.h ../tcp-server/mythread.h ../tcp-server/threadFrame.h ../tcp-server/user.h .tmp/TCPServer1.0.0/ && $(COPY_FILE) --parents ../tcp-server/main.cpp ../tcp-server/data.cpp ../tcp-server/frameData.cpp ../tcp-server/myserver.cpp ../tcp-server/mythread.cpp ../tcp-server/threadFrame.cpp ../tcp-server/user.cpp .tmp/TCPServer1.0.0/ && (cd `dirname .tmp/TCPServer1.0.0` && $(TAR) TCPServer1.0.0.tar TCPServer1.0.0 && $(COMPRESS) TCPServer1.0.0.tar) && $(MOVE) `dirname .tmp/TCPServer1.0.0`/TCPServer1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/TCPServer1.0.0
+	$(COPY_FILE) --parents $(DIST) .tmp/TCPServer1.0.0/ && $(COPY_FILE) --parents ../tcp-server/data.h ../tcp-server/frameData.h ../tcp-server/myserver.h ../tcp-server/mythread.h ../tcp-server/threadFrame.h ../tcp-server/user.h ../tcp-server/card.h ../tcp-server/table.h .tmp/TCPServer1.0.0/ && $(COPY_FILE) --parents ../tcp-server/main.cpp ../tcp-server/data.cpp ../tcp-server/frameData.cpp ../tcp-server/myserver.cpp ../tcp-server/mythread.cpp ../tcp-server/threadFrame.cpp ../tcp-server/user.cpp ../tcp-server/card.cpp ../tcp-server/table.cpp .tmp/TCPServer1.0.0/ && (cd `dirname .tmp/TCPServer1.0.0` && $(TAR) TCPServer1.0.0.tar TCPServer1.0.0 && $(COMPRESS) TCPServer1.0.0.tar) && $(MOVE) `dirname .tmp/TCPServer1.0.0`/TCPServer1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/TCPServer1.0.0
 
 
 clean:compiler_clean 
@@ -1082,6 +1088,13 @@ user.o: ../tcp-server/user.cpp /opt/Qt5.3.2/5.3/gcc/include/QtNetwork/QTcpSocket
 		/opt/Qt5.3.2/5.3/gcc/include/QtCore/QString \
 		../tcp-server/user.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o user.o ../tcp-server/user.cpp
+
+card.o: ../tcp-server/card.cpp ../tcp-server/card.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o card.o ../tcp-server/card.cpp
+
+table.o: ../tcp-server/table.cpp ../tcp-server/table.h \
+		../tcp-server/card.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o table.o ../tcp-server/table.cpp
 
 moc_myserver.o: moc_myserver.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_myserver.o moc_myserver.cpp
