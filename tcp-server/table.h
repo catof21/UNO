@@ -10,6 +10,7 @@
 #include <ctime>
 #include <cstdlib>
 
+//proba
 
 
 class Table
