@@ -7,6 +7,7 @@
 #include <map>
 #include <list>
 #include "QString"
+#include "QChar"
 
 #include <ctime>
 #include <cstdlib>
@@ -25,12 +26,14 @@ public:
     bool action;
     Table();
     ~Table();
+    void Load();
     void PrintDrawDeck();
     void ShuffleDrawDeck();
     void Draw();
+    void DrawEnough();
     void Play(QChar c, QChar n, QChar c2);
     void PlayClient();
-    void Deal();
+    void Deal(int c);
     void SayUno();
     void PrintTable();
     QString Send();

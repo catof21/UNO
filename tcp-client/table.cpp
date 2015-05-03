@@ -3,7 +3,7 @@
 
 Table::Table()
 {
-
+    uno=false;
 }
 
 Table::~Table()
@@ -67,7 +67,7 @@ int Table::Play(QChar n, QChar c)
                             playable = 0;
 
                         }else{                                      //ha vana  kezünkben a választott színből, akkor nem tehetjük ki ezt a lapot
-                            std::cout<<"Nem hivhatod ki ezt a lapot, mert van a hivo szinu lapod!"<<std::endl;
+                            std::cout<<"Nem hivhatod ki ezt a lapot, mert van hivo szinu lapod!"<<std::endl;
                             playable = 2;
                         }
                     }else{                                            //ha nem F, akkor további feltétel nélkül kijátszhatja a lapo
@@ -116,7 +116,7 @@ int Table::Play(QChar n, QChar c)
                         playable=0;
                     }else{                                                      //ha sem a szín, sem a száma nem egyezik meg, a lap nem játszható ki
                         std::cout<<"Nem hivhatod ki ezt a lapot, mert sem a szine sem a szama nem egyezik meg a hívo lapeval!"<<std::endl;
-                        playable=2;
+                        playable=4;
                     }
                 }
             }
@@ -136,4 +136,10 @@ void Table::SayUno(){
     }
 }
 
+bool Table::getUno(){
+    return uno;
+}
 
+void Table::setUno(bool b){
+    uno=b;
+}

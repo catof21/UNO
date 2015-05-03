@@ -110,7 +110,7 @@ void mythread::readyRead()
         }
         else if (cmd[0] == 'D'){
             qDebug() << "draw";
-            table->Draw();
+            table->DrawEnough();
 
         }
         else if (cmd[0] == 'X'){

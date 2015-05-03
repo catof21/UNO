@@ -21,7 +21,6 @@ SOURCES += main.cpp \
     startdialog.cpp \
     mainwindow.cpp \
     card.cpp \
-    menu.cpp \
     table.cpp
 
 HEADERS += \
@@ -29,7 +28,6 @@ HEADERS += \
     startdialog.h \
     mainwindow.h \
     card.h \
-    menu.h \
     table.h
 
 FORMS += \

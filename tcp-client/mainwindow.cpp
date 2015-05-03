@@ -122,6 +122,7 @@ void MainWindow::readyRead()
    QString tempString = socket->readAll();
 
    if (tempString != "ACK") {
+          table->Hand.erase(table->Hand.begin(), table->Hand.end());
           ui->textBrowser->clear();
           ui->textBrowser->append("U(pdate) | P(lay) | D(raw) | X(UNO)");
           table->playedCard.setNumber(tempString.at(0));
@@ -171,7 +172,24 @@ void MainWindow::on_pushButton_clicked()
               createMessage(temp.append(temp.at(1)));       //ha nincs megadva második szín, akkor a lap színét teszi be másodiknak
            }
         }else{
-            ui->textBrowser->append("Válassz másik lapot!");  //miért nem case->
+            /*switch (table->Play(n, c)) {
+            case 1:
+                ui->textBrowser->append("Nincs ilyen lap a kezedben. Kerlek adj meg masikat!");
+                ui->lineEdit->clear();
+                break;
+            case 2:
+                ui->textBrowser->append("Nem hivhatod ki ezt a lapot, mert van hivo szinu lapod!");
+                ui->lineEdit->clear();
+                break;
+            case 3:
+                ui->textBrowser->append("A hivott akciolapra csak ugyan olyan akciolapot tehetsz. Ha nincs nalad ilyen lap, valaszd a D(raw) menut!");
+                ui->lineEdit->clear();
+                break;
+            case 4:
+                ui->textBrowser->append("Nem hivhatod ki ezt a lapot, mert sem a szine sem a szama nem egyezik meg a hívo lapeval!");
+                ui->lineEdit->clear();
+                break;
+            }*/
             ui->lineEdit->clear();
         }
     }

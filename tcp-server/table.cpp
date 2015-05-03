@@ -3,11 +3,32 @@
 #include <QDebug>
 
 #define RANDOM_INTREVAL 4500;
-#define DIRSTRIBUTED_CARD 7;
+#define DIRSTRIBUTED_CARD_NORMAL_GAME 7;
+#define DIRSTRIBUTED_CARD_TEST_GAME 3;
+
+using namespace std;
 
 Table::Table()
 {
     std::cout<<"Beleptem a Table konstruktotraba"<<std::endl;
+
+
+    numberOfDrawCards=1;
+    action = false;
+
+    Load();
+}
+
+Table::~Table()
+{
+
+}
+
+void Table::Load()
+{
+    qDebug() <<"Normal jatek? [Y/N]";
+    char gameType;
+    cin>>gameType;
     std::map<int, Card> deck;               //ebbe kerülnek véletlenszerűen a lapok
     srand(time(NULL));                      //elindul a randomizálás
     char numbers[13]={'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'S', 'D', 'R'};
@@ -26,25 +47,13 @@ Table::Table()
             }                                   //
             deck[k] = c;                        //ha nincs egyezés bekerül a map-be
         }
-
-        for(int j=1; j<13; j++){                //1-tol R-ig innen kapja a számot a lap
-            Card c;                             //példányost egy kértyalapot
-            c.setNumber(numbers[j]);            //értéket ada számának
-            c.setColor(color[i]);               //értéket ada színének
-            c.setColor2(color[i]);              //joker lapoknál a választott szín, itt megegyezik a lap eredeti szinével
-            int k = rand() % RANDOM_INTREVAL;   //random kulcsot ad a kártyalap mellé
-            while(deck.find(k)!=deck.end()){    //ha már kiosztotta a kulcsot elveszne a kártyalap
-                k = rand() % RANDOM_INTREVAL;   //új kulcsot kér
-            }                                   //
-            deck[k] = c;                        //ha nincs egyezés bekerül a map-be
-        }
     }
 
     for(int i=0; i<4; i++){                 //négyzser lefut a joker lapok létrehozásához
         Card c;                             //példányost egy kértyalapot
         c.setNumber('I');                   //a szám értéke különböziok az eddigiektől
         c.setColor('W');                    //a szín értéke a joker lesz
-        c.setColor2('R');                   //ezt at értéket kell átállítani a játékos választására a lap meghívásakor
+        c.setColor2(color[i]);              //ezt at értéket kell átállítani a játékos választására a lap meghívásakor
         int k = rand() % RANDOM_INTREVAL;   //random kulcsot ad a kártyalap mellé
         while(deck.find(k)!=deck.end()){    //ha már kiosztotta a kulcsot elveszne a kártyalap
             k = rand() % RANDOM_INTREVAL;   //új kulcsot kér
@@ -53,40 +62,65 @@ Table::Table()
 
         c.setNumber('F');                   //a szám értéke F, mert 4 lapot kell húzni a lap kijátszásakor
         c.setColor('W');                    //a szín értéke a joker lesz
-        c.setColor2('R');                   //ezt at értéket kell átállítani a játékos választására a lap meghívásakor
-        k = rand() % RANDOM_INTREVAL;   //random kulcsot ad a kártyalap mellé
+        c.setColor2(color[i]);              //ezt at értéket kell átállítani a játékos választására a lap meghívásakor
+        k = rand() % RANDOM_INTREVAL;       //random kulcsot ad a kártyalap mellé
         while(deck.find(k)!=deck.end()){    //ha már kiosztotta a kulcsot elveszne a kártyalap
             k = rand() % RANDOM_INTREVAL;   //új kulcsot kér
         }                                   //
         deck[k] = c;                        //ha nincs egyezés bekerül a map-be
     }
+    if( gameType=='Y'){
+        for(int i=0; i<4; i++){                  //beállítja a pédányosításhoz a színt
+            for(int j=1; j<13; j++){                //1-tol R-ig innen kapja a számot a lap
+                Card c;                             //példányost egy kértyalapot
+                c.setNumber(numbers[j]);            //értéket ada számának
+                c.setColor(color[i]);               //értéket ada színének
+                c.setColor2(color[i]);              //joker lapoknál a választott szín, itt megegyezik a lap eredeti szinével
+                int k = rand() % RANDOM_INTREVAL;   //random kulcsot ad a kártyalap mellé
+                while(deck.find(k)!=deck.end()){    //ha már kiosztotta a kulcsot elveszne a kártyalap
+                    k = rand() % RANDOM_INTREVAL;   //új kulcsot kér
+                }                                   //
+                deck[k] = c;                        //ha nincs egyezés bekerül a map-be
+            }
+        }
+    }
+    else{
+        for(int i=0; i<4; i++){                  //beállítja a pédányosításhoz a színt
+            for(int j=10; j<13; j++){               //1-tol R-ig innen kapja a számot a lap
+                Card c;                             //példányost egy kértyalapot
+                c.setNumber(numbers[j]);            //értéket ada számának
+                c.setColor(color[i]);               //értéket ada színének
+                c.setColor2(color[i]);              //joker lapoknál a választott szín, itt megegyezik a lap eredeti szinével
+                int k = rand() % RANDOM_INTREVAL;   //random kulcsot ad a kártyalap mellé
+                while(deck.find(k)!=deck.end()){    //ha már kiosztotta a kulcsot elveszne a kártyalap
+                    k = rand() % RANDOM_INTREVAL;   //új kulcsot kér
+                }                                   //
+                deck[k] = c;                        //ha nincs egyezés bekerül a map-be
+            }
+        }
+    }
 
     for(std::map<int, Card>::iterator i=deck.begin(); i!=deck.end(); i++){  //végigmegy a map-en
         drawDeck.push_back(i->second);      //az összekevert lapok a húzó pakliba kerülnek
     }
-
-    numberOfDrawCards=1;
-    action = false;
-
-
-
-//    delete numbers;
-//    delete color;
-    std::cout << " kileptt a tabla";
-}
-
-Table::~Table()
-{
-
+    PrintDrawDeck();
+    int distributedCard;
+    if( gameType=='Y'){
+        distributedCard=DIRSTRIBUTED_CARD_NORMAL_GAME
+    }else{
+        distributedCard=DIRSTRIBUTED_CARD_TEST_GAME
+    }
+    Deal(distributedCard);
 }
 
 void Table::PrintDrawDeck()
 {
     std::cout<<"Beleptem a PrintDrawDeck() fugvenybe"<<std::endl;
-    for(int i=0; i<drawDeck.size(); i++){
+    for(unsigned i=0; i<drawDeck.size(); i++){
         drawDeck[i].Print();
         std::cout<<" ";
     }
+    std::cout<<drawDeck.size();
     std::cout<<std::endl;
 }
 
@@ -95,7 +129,7 @@ void Table::ShuffleDrawDeck()
 {
     std::map<int, Card> deck;               //ebbe kerülnek véletlenszerűen a lapok
     srand(time(NULL));                      //elindul a rendomizálás
-    for(int i = 0; i<playDeck.size(); i++){ //végigmegy a dobó paklin
+    for(unsigned i = 0; i<playDeck.size(); i++){ //végigmegy a dobó paklin
         int j = rand() % RANDOM_INTREVAL;   //random kulcsot ad a kártyalap mellé
         while(deck.find(j)!=deck.end()){    //ha már kiosztotta a kulcsot elveszne a kártyalap
             j = rand() % RANDOM_INTREVAL;   //új kulcsot kér
@@ -112,6 +146,12 @@ void Table::ShuffleDrawDeck()
 
 void Table::Draw()
 {
+    Hand.push_back(drawDeck[(drawDeck.size())-1]);  //a játékos kezébe kerül az osztó pakli utolsó eleme
+    drawDeck.pop_back();                            // az osztó pakli utolsó elemét törli
+}
+
+void Table::DrawEnough()
+{
     for(unsigned i=0; i<numberOfDrawCards; i++){        //annyiszor fut le, ahány lapot kell húznia a soron következő játékosnak
 //        qDebug() <<"Beleptem a Draw() fuggvenybe"
        /* Card d;
@@ -119,8 +159,7 @@ void Table::Draw()
         std::cout<<i<<std::endl;
         d = drawDeck[(drawDeck.size())-1];
         d.Print();*/
-        Hand.push_back(drawDeck[(drawDeck.size())-1]);  //a játékos kezébe kerül az osztó pakli utolsó eleme
-        drawDeck.pop_back();                            // az osztó pakli utolsó elemét törli
+        Draw();
     }
     numberOfDrawCards=1;                                //visszaállítja a húzando lapok számát 1-re
     action = false;                                     //vissazállítja az akciólap változót hamisra
@@ -138,7 +177,9 @@ void Table::Play(QChar c, QChar n, QChar c2)
         }
         i++;                                            //növeli i-t
     }
-
+    if(j->getColor()=='W'){
+        j->setColor2(c2);
+    }
     playDeck.push_back(playedCard);                     //a hívott lapot a kijátszott lapok közé teszi
     playedCard=*j;                                      //a dobott lapt a hívott lapba teszi
     Hand.erase(j);                                      //j-t törli a kézből
@@ -179,9 +220,9 @@ void Table::Play(QChar c, QChar n, QChar c2)
     std::cout<<"jartam a Play() fuggvenyben"<<std::endl;      //
 }
 
-void Table::Deal()
+void Table::Deal(int c)
 {
-    for(int i=0; i<7; i++){
+    for(int i=0; i<c; i++){
         Draw();
     }
     playedCard=drawDeck[(drawDeck.size())-1];
@@ -209,11 +250,11 @@ void Table::PrintTable(){
     }
     std::cout<<std::endl;
     std::cout<<"A hivott lap: ";
-    char col=playedCard.getColor();
+    QChar col=playedCard.getColor();
     if(col=='W'){
         playedCard.Print();
-        char col2=playedCard.getColor2();
-        std::cout<<" A valasztott szin: "<<col2;
+        QChar col2=playedCard.getColor2();
+        qDebug() <<" A valasztott szin: "<<col2;
     }else{
         playedCard.Print();
     }

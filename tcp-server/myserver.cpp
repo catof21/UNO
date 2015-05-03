@@ -28,7 +28,7 @@ void myserver::StartServer()
     frameList = new QLinkedList<threadFrame>;
     sysFrame = new int;
     table = new Table;
-    table->Deal();
+    //table->Deal();
     *sysFrame = 0;
     if(!this->listen(QHostAddress::Any,8060))
     {

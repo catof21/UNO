@@ -10,38 +10,39 @@ Card::~Card()
 
 }
 
-char Card::getNumber()
+QChar Card::getNumber()
 {
     return number;
 }
 
-char Card::getColor()
+QChar Card::getColor()
 {
     return color;
 }
 
-char Card::getColor2()
+QChar Card::getColor2()
 {
     return color2;
 }
 
-void Card::setNumber(char n)
+void Card::setNumber(QChar n)
 {
     number =n;
 }
 
-void Card::setColor(char c)
+void Card::setColor(QChar c)
 {
     color =c;
 }
 
-void Card::setColor2(char c2)
+void Card::setColor2(QChar c2)
 {
     color2 =c2;
 }
 
 void Card::Print()
 {
-    std::cout<<color<<number;
+    qDebug() << color << number;
+//    std::cout<<color<<number;
 }
 

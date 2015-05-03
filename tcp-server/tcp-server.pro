@@ -18,8 +18,7 @@ SOURCES += main.cpp \
     threadFrame.cpp \
     user.cpp \
     card.cpp \
-    table.cpp \
-    menu.cpp
+    table.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
@@ -32,6 +31,5 @@ HEADERS += \
     threadFrame.h \
     user.h \
     card.h \
-    table.h \
-    menu.h
+    table.h
 
