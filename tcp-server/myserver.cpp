@@ -1,11 +1,15 @@
 #include "myserver.h"
 #include "table.h"
+
+#define MAXPLAYER 2
+
 using namespace::std;
 QLinkedList<frameData> *data;
 QLinkedList<threadFrame> *frameList;
 Table *table;
 
 int *sysFrame;
+int test;
 
 myserver::myserver(QObject *parent) :
     QTcpServer(parent)
@@ -27,7 +31,7 @@ void myserver::StartServer()
     data = new QLinkedList<frameData>;
     frameList = new QLinkedList<threadFrame>;
     sysFrame = new int;
-    table = new Table;
+    table = new Table(MAXPLAYER); //asztal legenerálása
     //table->Deal();
     *sysFrame = 0;
     if(!this->listen(QHostAddress::Any,8060))
@@ -38,6 +42,8 @@ void myserver::StartServer()
     {
         qDebug() << "Listening on port 8060";
     }
+    test=0;
+
 }
 
 void myserver::incomingConnection(int socketDescriptor)
@@ -47,6 +53,12 @@ void myserver::incomingConnection(int socketDescriptor)
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
     thread->start();
+    test++;
+    qDebug() << test <<"test_cnt";
+    if (test == MAXPLAYER) {
+        //FORK
+
+    }
 }
 
 void myserver::cleanUp()

@@ -14,26 +14,29 @@
 
 //proba
 
+using namespace std;
 
 class Table
 {
 public:
-    std::vector<Card> drawDeck;
-    std::vector<Card> playDeck;
-    std::list<Card> Hand;
+    vector<Card> drawDeck;
+    vector<Card> playDeck;
+    typedef list<Card> Hand;
+    map<int, Hand> Hands;
+//    Hand Hands[cnt_players];
     Card playedCard;
     unsigned numberOfDrawCards;
     bool action;
-    Table();
+    Table(int cnt_players);
     ~Table();
-    void Load();
+    void Load(int cnt_players);
     void PrintDrawDeck();
     void ShuffleDrawDeck();
-    void Draw();
+    void Draw(player_id);
     void DrawEnough();
     void Play(QChar c, QChar n, QChar c2);
     void PlayClient();
-    void Deal(int c);
+    void Deal(int cnt_cards, int cnt_players);
     void SayUno();
     void PrintTable();
     QString Send();

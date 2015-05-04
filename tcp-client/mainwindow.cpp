@@ -55,8 +55,8 @@ MainWindow::~MainWindow()
 void MainWindow::clientConnected()
 {
 //you are now connected, continue with your execution
-    for(int i=0;i<10000000;i++); //waste time for thread on server to setup
-
+//    for(int i=0;i<10000000;i++); //waste time for thread on server to setup
+   QThread::sleep(1) ;
    connect(socket, SIGNAL(readyRead()), this, SLOT(handleReadyRead()));
    socket->write("REG\n");
    socket->flush();
@@ -67,7 +67,7 @@ void MainWindow::clientConnected()
    socket->waitForReadyRead();
    socket->readAll();
    m_bUserNameSend = true;
-   ui->textBrowser->setText("Successfully connected.\n");
+   ui->textBrowser->setText("U(pdate) | P(lay) | D(raw) | X(UNO)");
 }
 
 

@@ -8,7 +8,7 @@
 
 using namespace std;
 
-Table::Table()
+Table::Table(int cnt_players)
 {
     std::cout<<"Beleptem a Table konstruktotraba"<<std::endl;
 
@@ -16,7 +16,7 @@ Table::Table()
     numberOfDrawCards=1;
     action = false;
 
-    Load();
+    Load(cnt_players);
 }
 
 Table::~Table()
@@ -24,11 +24,11 @@ Table::~Table()
 
 }
 
-void Table::Load()
+void Table::Load(int cnt_players)
 {
-    qDebug() <<"Normal jatek? [Y/N]";
-    char gameType;
-    cin>>gameType;
+   // qDebug() <<"Normal jatek? [Y/N]";
+    char gameType='Y';                      //for debug only!
+   // cin>>gameType;
     std::map<int, Card> deck;               //ebbe kerülnek véletlenszerűen a lapok
     srand(time(NULL));                      //elindul a randomizálás
     char numbers[13]={'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'S', 'D', 'R'};
@@ -110,7 +110,8 @@ void Table::Load()
     }else{
         distributedCard=DIRSTRIBUTED_CARD_TEST_GAME
     }
-    Deal(distributedCard);
+    Deal(distributedCard, cnt_players);
+
 }
 
 void Table::PrintDrawDeck()
@@ -144,10 +145,15 @@ void Table::ShuffleDrawDeck()
     }
 }
 
-void Table::Draw()
+void Table::Draw(player_id)
 {
-    Hand.push_back(drawDeck[(drawDeck.size())-1]);  //a játékos kezébe kerül az osztó pakli utolsó eleme
-    drawDeck.pop_back();                            // az osztó pakli utolsó elemét törli
+    for(map<int, Hand>::iterator i=Hands.begin(); i!=Hands.end();i++) {
+        if i->
+        Hand.push_back(drawDeck[(drawDeck.size())-1]);  //a játékos kezébe kerül az osztó pakli utolsó eleme
+        drawDeck.pop_back();                            // az osztó pakli utolsó elemét törli
+
+    }
+
 }
 
 void Table::DrawEnough()
@@ -220,11 +226,14 @@ void Table::Play(QChar c, QChar n, QChar c2)
     std::cout<<"jartam a Play() fuggvenyben"<<std::endl;      //
 }
 
-void Table::Deal(int c)
+void Table::Deal(int cnt_cards, int cnt_players)
 {
-    for(int i=0; i<c; i++){
-        Draw();
+    for(int j=0; j<cnt_players;j++){
+        for(int i=0; i<cnt_cards; i++){
+            Draw(j);
+        }
     }
+
     playedCard=drawDeck[(drawDeck.size())-1];
     drawDeck.pop_back();
     PrintTable();
