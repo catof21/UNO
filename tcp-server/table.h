@@ -27,6 +27,9 @@ public:
     Card playedCard;
     unsigned numberOfDrawCards;
     bool action;
+    int currentPlayer;
+    int course;
+    int maxPlayer;
     Table(int cnt_players);
     ~Table();
     void Load(int cnt_players);
@@ -37,9 +40,10 @@ public:
     void Play(int player_id, QChar c, QChar n, QChar c2);
     void PlayClient();
     void Deal(int cnt_cards, int cnt_players);
-    void SayUno();
+    void SayUno(int player_id);
     void PrintTable();
     QString Send(int player_id);
+    void SetNextPlayer();
 
 };
 

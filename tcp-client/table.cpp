@@ -126,13 +126,15 @@ int Table::Play(QChar n, QChar c)
     return playable;
 }
 
-void Table::SayUno(){
+int Table::SayUno(){
     if(Hand.size()!=1){
         std::cout<<"Nem mondhatod be, hogy UNO!"<<std::endl;    //üzenetet ad a bemondás sikerteklenségéről
+        return 1;
     }
     else{
         std::cout<<"Bemondtad, hogy UNO!"<<std::endl;           //üzenetet ad a bemondás sikeréről
-        //TODO: küldjön üzenetet a servernek a bemonmdásról
+        uno=false;
+        return 0;
     }
 }
 

@@ -14,10 +14,8 @@ class Table
 {
 
 private:
-    bool uno;
 
 public:
-
     std::list<Card> Hand;
     Card playedCard;
     Table();
@@ -25,11 +23,11 @@ public:
     void Print();
     void Draw();
     int Play(QChar n, QChar c);
-    void SayUno();
+    int SayUno();
     bool getUno();
     void setUno(bool b);
     bool action;
-
+    bool uno;
 };
 
 #endif // TABLE_H

@@ -3,7 +3,7 @@
 #include <QDebug>
 
 #define RANDOM_INTREVAL 4500;
-#define DIRSTRIBUTED_CARD_NORMAL_GAME 7;
+#define DIRSTRIBUTED_CARD_NORMAL_GAME 2;
 #define DIRSTRIBUTED_CARD_TEST_GAME 3;
 
 using namespace std;
@@ -11,11 +11,11 @@ using namespace std;
 Table::Table(int cnt_players)
 {
     std::cout<<"Beleptem a Table konstruktotraba"<<std::endl;
-
-
     numberOfDrawCards=1;
     action = false;
-
+    course=1;
+    currentPlayer=0;
+    maxPlayer=cnt_players;
     Load(cnt_players);
 }
 
@@ -129,13 +129,13 @@ void Table::PrintDrawDeck()
 void Table::ShuffleDrawDeck()
 {
     std::map<int, Card> deck;               //ebbe kerülnek véletlenszerűen a lapok
-    srand(time(NULL));                      //elindul a rendomizálás
+    srand(time(NULL));                      //elindul a randomizálás
     for(unsigned i = 0; i<playDeck.size(); i++){ //végigmegy a dobó paklin
         int j = rand() % RANDOM_INTREVAL;   //random kulcsot ad a kártyalap mellé
         while(deck.find(j)!=deck.end()){    //ha már kiosztotta a kulcsot elveszne a kártyalap
             j = rand() % RANDOM_INTREVAL;   //új kulcsot kér
         }                                   //
-        deck[j] = playDeck[i];              //ha noincs egyezés bekerül a map-be
+        deck[j] = playDeck[i];              //ha nincs egyezés bekerül a map-be
     }
 
     playDeck.clear();                       //kiüríti a dobó paklit
@@ -178,7 +178,7 @@ void Table::Play(int player_id, QChar c, QChar n, QChar c2)
     }
     playDeck.push_back(playedCard);                     //a hívott lapot a kijátszott lapok közé teszi
     playedCard=*j;                                      //a dobott lapt a hívott lapba teszi
-    Hands[player_id].erase(j);                                      //j-t törli a kézből
+    Hands[player_id].erase(j);                          //j-t törli a kézből
 
     if(n=='D'){                                         //ha húzz kettőt, akkor
         action = true;                                  //akor beállítja az akciót igaznak
@@ -203,8 +203,7 @@ void Table::Play(int player_id, QChar c, QChar n, QChar c2)
                 if(n=='R'){                             //ha fordulj
                     action = false;                     //akkor beállítja az akciót hamisnak
                     numberOfDrawCards=1;                //a húzandó lapok számát 1-re állítja
-                    std::cout<<"megforditottad a kort!"<<std::endl;
-                    // TODO megfordítani a kört
+                    course=(-1)*course;
                 }else{                                  //ha nem akció lap
                     action = false;                     //akkor beállítja az akciót hamisnak
                     numberOfDrawCards=1;                //a húzandó lapok számát 1-re állítja
@@ -212,6 +211,7 @@ void Table::Play(int player_id, QChar c, QChar n, QChar c2)
             }
         }
     }
+    qDebug()<<course<<" az irány";
     PrintTable();
     std::cout<<"jartam a Play() fuggvenyben"<<std::endl;      //
 }
@@ -231,20 +231,15 @@ void Table::Deal(int cnt_cards, int cnt_players)
     PrintTable();
 }
 
-/*void Table::SayUno(){
-    if(Hand.size()!=1){
-        std::cout<<"Nem mondhatod be, hogy UNO!"<<std::endl;    //üzenetet ad a bemondás sikerteklenségéről
-    }
-    else{
-        std::cout<<"Bemondtad, hogy UNO!"<<std::endl;           //üzenetet ad a bemondás sikeréről
-        //TODO: küldjön üzenetet a servernek a bemonmdásról
+void Table::SayUno(int player_id){
+    for(int i=0; i<2; i++){
+        Draw(player_id);
     }
 }
-*/
+
 void Table::PrintTable(){
     for(unsigned i =0; i<Hands.size(); i++){
         std::cout<<"A "<<i+1<<". jatekos lapjai: ";
-        //std::list<Card>::iterator j = Hands[i].begin();
         for(std::list<Card>::iterator j = Hands[i].begin(); j != Hands[i].end(); j++){
             Card c = *j;
             c.Print();
@@ -279,7 +274,6 @@ QString Table::Send(int player_id){
         data.append("0");
     }
     qDebug() << data;
-    //std::list<Card>::iterator i = Hand.begin();
     for(std::list<Card>::iterator i = Hands[player_id].begin(); i != Hands[player_id].end(); i++){
         Card c = *i;
         data.append(c.getNumber());
@@ -287,5 +281,16 @@ QString Table::Send(int player_id){
         data.append(c.getColor2());
     }
     return data;
+}
+
+void Table::SetNextPlayer(){
+    currentPlayer=currentPlayer+course;
+    qDebug()<<currentPlayer<< " kovetkezo jetekos feltetel elott";
+    if (currentPlayer==-1){
+        currentPlayer=maxPlayer-1;
+    }else if(currentPlayer==maxPlayer){
+        currentPlayer=0;
+    }
+    qDebug()<<currentPlayer<< " kovetkezo jetekos feltetel utan";
 }
 

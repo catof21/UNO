@@ -141,6 +141,10 @@ void MainWindow::readyRead()
           qDebug() << tempString.at(4);
           ui->textBrowser->append("Hívó lap:");
           ui->textBrowser->append(table->playedCard.Send().toUtf8());
+          if(table->playedCard.getColor()=='W'){
+              ui->textBrowser->append("A hivott szin: ");
+              ui->textBrowser->append(table->playedCard.getColor2());
+          }
           ui->textBrowser->append("\nKézben lévő lapok:");
           Card c;
            for(int i=4;i<tempString.length();i=i+3) {
@@ -149,6 +153,11 @@ void MainWindow::readyRead()
                c.setColor2(tempString.at(i+2));
                table->Hand.push_back(c);
                ui->textBrowser->append(c.Send().toUtf8());
+           }
+           int i =table->Hand.size();
+           qDebug() << i;
+           if(table->Hand.size()==1){
+               table->setUno(true);
            }
 
    } else {
@@ -161,18 +170,24 @@ void MainWindow::on_pushButton_clicked()
 {
     //user clicked the send button and would like their message to be sent. woooo.
     QString temp, stuff;
-    temp=ui->lineEdit->text();
-    if (temp.at(0)=='P') {
-        QChar c=temp.at(1);
-        QChar n=temp.at(2);
+    if(table->getUno()==true){
+        temp='1';
+    }else{
+        temp='0';
+    }
+    temp.append(ui->lineEdit->text());
+    if (temp.at(1)=='P') {
+        QChar c=temp.at(2);
+        QChar n=temp.at(3);
         if(table->Play(n, c)==0){                           //ha játszható
-           if (c=='W')   {
+           if (c=='W')   {              
               createMessage(temp);
            } else {
-              createMessage(temp.append(temp.at(1)));       //ha nincs megadva második szín, akkor a lap színét teszi be másodiknak
+              createMessage(temp.append(temp.at(2)));       //ha nincs megadva második szín, akkor a lap színét teszi be másodiknak
            }
+           table->setUno(false);
         }else{
-            /*switch (table->Play(n, c)) {
+            switch (table->Play(n, c)) {
             case 1:
                 ui->textBrowser->append("Nincs ilyen lap a kezedben. Kerlek adj meg masikat!");
                 ui->lineEdit->clear();
@@ -189,13 +204,33 @@ void MainWindow::on_pushButton_clicked()
                 ui->textBrowser->append("Nem hivhatod ki ezt a lapot, mert sem a szine sem a szama nem egyezik meg a hívo lapeval!");
                 ui->lineEdit->clear();
                 break;
-            }*/
+            }
             ui->lineEdit->clear();
         }
     }
-    else if ((temp.at(0)=='U') || (temp.at(0)=='D')){
+    else if (temp.at(1)=='D'){
         createMessage(temp);
+        table->setUno(false);
     }
+    else if (temp.at(1)=='X'){
+        int i;
+        i=table->SayUno();
+        if(i==0){
+            ui->textBrowser->append("Bemondtad, hogy UNO!");
+        }else{
+            ui->textBrowser->append("Nem mondhatod be, hogy UNO!");
+        }
+        ui->lineEdit->clear();
+    }else{
+        createMessage(temp);
+
+    }
+    if(table->getUno()==true){
+        qDebug()<<"true";
+    }else{
+        qDebug()<<"false";
+    }
+
 
 }
 

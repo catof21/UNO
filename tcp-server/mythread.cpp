@@ -101,23 +101,26 @@ void mythread::readyRead()
                 ++command;
                 ++i;
         }
-        if (cmd[0] == 'U') {
+        if (cmd[1] == 'P') {
+            qDebug() << "play";
+            table->Play(table->currentPlayer, cmd[2],cmd[3],cmd[4]);
+            if(cmd[0]=='1'){
+                table->SayUno(table->currentPlayer);
+            }
+            table->SetNextPlayer();
+        }
+        else if (cmd[1] == 'D'){
+            qDebug() << "draw";
+            table->DrawEnough(table->currentPlayer);
+            table->SetNextPlayer();
+            if(cmd[0]=='1'){
+                table->SayUno(table->currentPlayer);
+            }
+
+        }else {
             qDebug() << "update";
         }
-        else if (cmd[0] == 'P') {
-            qDebug() << "play";
-            table->Play(0, cmd[1],cmd[2],cmd[3]);
-        }
-        else if (cmd[0] == 'D'){
-            qDebug() << "draw";
-            table->DrawEnough(0);
-
-        }
-        else if (cmd[0] == 'X'){
-            qDebug() << "UNO";
-
-        }
-        str.append(table->Send(0));
+        str.append(table->Send(table->currentPlayer));
         msgTemp.append(str);
     }
 
