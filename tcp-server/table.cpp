@@ -145,38 +145,28 @@ void Table::ShuffleDrawDeck()
     }
 }
 
-void Table::Draw(player_id)
+void Table::Draw(int player_id)
 {
-    for(map<int, Hand>::iterator i=Hands.begin(); i!=Hands.end();i++) {
-        if i->
-        Hand.push_back(drawDeck[(drawDeck.size())-1]);  //a játékos kezébe kerül az osztó pakli utolsó eleme
-        drawDeck.pop_back();                            // az osztó pakli utolsó elemét törli
 
-    }
-
+    Hands[player_id].push_back(drawDeck[(drawDeck.size())-1]);     //a játékos kezébe kerül az osztó pakli utolsó eleme
+    drawDeck.pop_back();                                       // az osztó pakli utolsó elemét törli
 }
 
-void Table::DrawEnough()
+void Table::DrawEnough(int player_id)
 {
     for(unsigned i=0; i<numberOfDrawCards; i++){        //annyiszor fut le, ahány lapot kell húznia a soron következő játékosnak
-//        qDebug() <<"Beleptem a Draw() fuggvenybe"
-       /* Card d;
-        int i = drawDeck.size();
-        std::cout<<i<<std::endl;
-        d = drawDeck[(drawDeck.size())-1];
-        d.Print();*/
-        Draw();
+        Draw(player_id);
     }
     numberOfDrawCards=1;                                //visszaállítja a húzando lapok számát 1-re
     action = false;                                     //vissazállítja az akciólap változót hamisra
-//    PrintTable();                                       //kilistázza az asztal tertelmát
+    PrintTable();                                       //kilistázza az asztal tertelmát
 }
 
-void Table::Play(QChar c, QChar n, QChar c2)
+void Table::Play(int player_id, QChar c, QChar n, QChar c2)
 {
-    std::list<Card>::iterator j = Hand.end();           //létrehoz egy iterátort ami a keze első elemér mutat
-    std::list<Card>::iterator i = Hand.begin();         //létrehoz egy iterátort ami a keze utolsó elemér mutat
-    while(i != Hand.end()){                             //végigmegy a kézen
+    std::list<Card>::iterator j = Hands[player_id].end();           //létrehoz egy iterátort ami a keze első elemér mutat
+    std::list<Card>::iterator i = Hands[player_id].begin();         //létrehoz egy iterátort ami a keze utolsó elemér mutat
+    while(i != Hands[player_id].end()){                             //végigmegy a kézen
         if(i->getColor()==c && i->getNumber()==n){      //ha megtalálta a lapot
             j=i;                                        //a j-t átállítja ugy, hogy erre a lapra mutasson
             std::cout<<"Megtalaltam a lapot"<<std::endl;
@@ -188,7 +178,7 @@ void Table::Play(QChar c, QChar n, QChar c2)
     }
     playDeck.push_back(playedCard);                     //a hívott lapot a kijátszott lapok közé teszi
     playedCard=*j;                                      //a dobott lapt a hívott lapba teszi
-    Hand.erase(j);                                      //j-t törli a kézből
+    Hands[player_id].erase(j);                                      //j-t törli a kézből
 
     if(n=='D'){                                         //ha húzz kettőt, akkor
         action = true;                                  //akor beállítja az akciót igaznak
@@ -229,6 +219,8 @@ void Table::Play(QChar c, QChar n, QChar c2)
 void Table::Deal(int cnt_cards, int cnt_players)
 {
     for(int j=0; j<cnt_players;j++){
+    Hand hand;
+    Hands.push_back(hand);
         for(int i=0; i<cnt_cards; i++){
             Draw(j);
         }
@@ -239,7 +231,7 @@ void Table::Deal(int cnt_cards, int cnt_players)
     PrintTable();
 }
 
-void Table::SayUno(){
+/*void Table::SayUno(){
     if(Hand.size()!=1){
         std::cout<<"Nem mondhatod be, hogy UNO!"<<std::endl;    //üzenetet ad a bemondás sikerteklenségéről
     }
@@ -248,15 +240,18 @@ void Table::SayUno(){
         //TODO: küldjön üzenetet a servernek a bemonmdásról
     }
 }
-
+*/
 void Table::PrintTable(){
-    std::cout<<"A lapjaid: ";
-    std::list<Card>::iterator i = Hand.begin();
-    for(std::list<Card>::iterator i = Hand.begin(); i != Hand.end(); i++){
-        Card c = *i;
-        c.Print();
-        std::cout<<" ";
+    for(unsigned i =0; i<Hands.size(); i++){
+        std::cout<<"A "<<i+1<<". jatekos lapjai: ";
+        //std::list<Card>::iterator j = Hands[i].begin();
+        for(std::list<Card>::iterator j = Hands[i].begin(); j != Hands[i].end(); j++){
+            Card c = *j;
+            c.Print();
+            std::cout<<" ";
+        }
     }
+
     std::cout<<std::endl;
     std::cout<<"A hivott lap: ";
     QChar col=playedCard.getColor();
@@ -272,7 +267,7 @@ void Table::PrintTable(){
 }
 
 
-QString Table::Send(){
+QString Table::Send(int player_id){
     QString data;
     data.clear();
     data.append(playedCard.getNumber());
@@ -284,8 +279,8 @@ QString Table::Send(){
         data.append("0");
     }
     qDebug() << data;
-    std::list<Card>::iterator i = Hand.begin();
-    for(std::list<Card>::iterator i = Hand.begin(); i != Hand.end(); i++){
+    //std::list<Card>::iterator i = Hand.begin();
+    for(std::list<Card>::iterator i = Hands[player_id].begin(); i != Hands[player_id].end(); i++){
         Card c = *i;
         data.append(c.getNumber());
         data.append(c.getColor());
@@ -293,3 +288,4 @@ QString Table::Send(){
     }
     return data;
 }
+

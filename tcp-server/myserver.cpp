@@ -1,7 +1,9 @@
 #include "myserver.h"
 #include "table.h"
+#include <stdio.h>
+#include "unistd.h"
 
-#define MAXPLAYER 2
+#define MAXPLAYER 1
 
 using namespace::std;
 QLinkedList<frameData> *data;
@@ -24,6 +26,7 @@ myserver::~myserver() //just because I hate memory leaks.
 
 void myserver::StartServer()
 {
+    test=0;
     timer = new QTimer;
     timer->start(300000); //this is a timer that will fire ever 5 minutes to clean unneeded messages.
     connect(timer,SIGNAL(timeout()),this,SLOT(cleanUp())); //connects the timer's timeout signal with the cleanup method.
@@ -32,7 +35,6 @@ void myserver::StartServer()
     frameList = new QLinkedList<threadFrame>;
     sysFrame = new int;
     table = new Table(MAXPLAYER); //asztal legenerálása
-    //table->Deal();
     *sysFrame = 0;
     if(!this->listen(QHostAddress::Any,8060))
     {
@@ -42,23 +44,21 @@ void myserver::StartServer()
     {
         qDebug() << "Listening on port 8060";
     }
-    test=0;
-
 }
 
 void myserver::incomingConnection(int socketDescriptor)
 {
     qDebug() << socketDescriptor << "Connecting ...";
-    mythread *thread = new mythread(lock, sysFrame,socketDescriptor,data, frameList, table,this);
+    mythread *thread = new mythread(lock, sysFrame,socketDescriptor,data, frameList,table,this);
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
     thread->start();
     test++;
-    qDebug() << test <<"test_cnt";
-    if (test == MAXPLAYER) {
-        //FORK
-
+    if(test==MAXPLAYER){
+        //TODO: fork()
     }
+    qDebug() << test <<"test_cnt";
+
 }
 
 void myserver::cleanUp()

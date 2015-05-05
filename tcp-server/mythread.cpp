@@ -106,18 +106,18 @@ void mythread::readyRead()
         }
         else if (cmd[0] == 'P') {
             qDebug() << "play";
-            table->Play(cmd[1],cmd[2],cmd[3]);
+            table->Play(0, cmd[1],cmd[2],cmd[3]);
         }
         else if (cmd[0] == 'D'){
             qDebug() << "draw";
-            table->DrawEnough();
+            table->DrawEnough(0);
 
         }
         else if (cmd[0] == 'X'){
             qDebug() << "UNO";
 
         }
-        str.append(table->Send());
+        str.append(table->Send(0));
         msgTemp.append(str);
     }
 
@@ -345,6 +345,7 @@ void mythread::readyWrite()
         {
             response = it->getData();
             socket->write(response.toUtf8());
+            qDebug() << socketDescriptor<<"-ak küldtem üzenetet";
             socket->flush();
             //doing an ACK to synchronize when the client expects more data.
             this->frame++;

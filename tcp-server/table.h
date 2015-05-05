@@ -22,8 +22,8 @@ public:
     vector<Card> drawDeck;
     vector<Card> playDeck;
     typedef list<Card> Hand;
-    map<int, Hand> Hands;
-//    Hand Hands[cnt_players];
+    vector<Hand> Hands;
+    //Hand Hands[1];
     Card playedCard;
     unsigned numberOfDrawCards;
     bool action;
@@ -32,14 +32,14 @@ public:
     void Load(int cnt_players);
     void PrintDrawDeck();
     void ShuffleDrawDeck();
-    void Draw(player_id);
-    void DrawEnough();
-    void Play(QChar c, QChar n, QChar c2);
+    void Draw(int player_id);
+    void DrawEnough(int player_id);
+    void Play(int player_id, QChar c, QChar n, QChar c2);
     void PlayClient();
     void Deal(int cnt_cards, int cnt_players);
     void SayUno();
     void PrintTable();
-    QString Send();
+    QString Send(int player_id);
 
 };
 
