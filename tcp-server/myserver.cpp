@@ -11,7 +11,7 @@ QLinkedList<threadFrame> *frameList;
 Table *table;
 
 int *sysFrame;
-int test;
+int cntP;
 
 myserver::myserver(QObject *parent) :
     QTcpServer(parent)
@@ -26,9 +26,9 @@ myserver::~myserver() //just because I hate memory leaks.
 
 void myserver::StartServer()
 {
-    test=0;
+    cntP=0;
     timer = new QTimer;
-    timer->start(300000); //this is a timer that will fire ever 5 minutes to clean unneeded messages.
+    timer->start(10000000); //this is a timer that will fire ever 5 minutes to clean unneeded messages.
     connect(timer,SIGNAL(timeout()),this,SLOT(cleanUp())); //connects the timer's timeout signal with the cleanup method.
     lock = new QMutex;
     data = new QLinkedList<frameData>;
@@ -48,23 +48,23 @@ void myserver::StartServer()
 
 void myserver::incomingConnection(int socketDescriptor)
 {
-    if(test<MAXPLAYER){
+    if(cntP<MAXPLAYER){
         qDebug() << socketDescriptor << "Connecting ...";
-        mythread *thread = new mythread(lock, sysFrame,socketDescriptor,data, frameList,table,this,test,1);
+        mythread *thread = new mythread(lock, sysFrame,socketDescriptor,data, frameList,table,this,cntP,1,MAXPLAYER-1);
         connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
         thread->start();
-        test++;
-        //TODO: fork()
+        cntP++;
+
     } else {
         qDebug() << "maxplayer reached";
         qDebug() << socketDescriptor << "Connecting ...";
-        mythread *thread = new mythread(lock, sysFrame,socketDescriptor,data, frameList,table,this,test,0);
+        mythread *thread = new mythread(lock, sysFrame,socketDescriptor,data, frameList,table,this,cntP,0,MAXPLAYER-1);
         connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
         thread->start();
 
     }
 
-    qDebug() << test <<"test_cnt";
+    qDebug() << cntP <<"test_cnt";
 
 }
 
@@ -99,4 +99,8 @@ begin: while(flag)
            }
        }
        lock->unlock();
+}
+
+void myserver::decrCntP() {
+    cntP--;
 }

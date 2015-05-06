@@ -265,17 +265,19 @@ void Table::PrintTable(){
 QString Table::Send(int player_id){
     QString data;
     data.clear();
-    data.append(playedCard.getNumber());
-    data.append(playedCard.getColor());
-    data.append(playedCard.getColor2());
-    if (action) {
+    data.append(playedCard.getNumber());              //asztalon levo szama
+    data.append(playedCard.getColor());               //asztalon levo szine
+    data.append(playedCard.getColor2());              //asztalra hivott szin
+    if (action) {                                     //action lap?
         data.append("1");
     } else {
         data.append("0");
     }
-    qDebug() << data;
-    //QChar c((short) player_id);
-    data.append(QString::number(player_id).at(0));
+    data.append(QString::number(player_id).at(0));    //PID
+//    data.append(QString::number(Hands[player_id].size(),16,0));   //jatekos hand méret hexa-ban
+    data.append(QString("%1").arg(Hands[player_id].size(), 2, 16, QChar('0')));
+    data.append(QString::number(currentPlayer).at(0)); //next PID, aki következik
+    qDebug()<< data;
     for(std::list<Card>::iterator i = Hands[player_id].begin(); i != Hands[player_id].end(); i++){
         Card c = *i;
         data.append(c.getNumber());

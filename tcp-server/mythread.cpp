@@ -4,7 +4,7 @@
 
 QMutex lock;
 
-mythread::mythread(QMutex *lk, int *frm, int ID,QLinkedList<frameData> *dat,QLinkedList<threadFrame> *list, Table *t, QObject *parent,int playerid,int conn) :
+mythread::mythread(QMutex *lk, int *frm, int ID, QLinkedList<frameData> *dat, QLinkedList<threadFrame> *list, Table *t, QObject *parent, int playerid, int conn, int maxplayer) :
 QThread(parent)
 {
     this->socketDescriptor = ID;
@@ -16,6 +16,8 @@ QThread(parent)
     this->lock = lk;
     this->playerid = playerid;
     this->conn = conn;
+    this->maxplayer = maxplayer;
+
 }
 
 void mythread::run()
@@ -55,7 +57,7 @@ void mythread::run()
 
 void mythread::readyRead()
 { //this will change
-    int flag=0;
+//    int flag=0;
     QString::iterator it;
     frameData tempData;
     QByteArray stuff = socket->readAll();
@@ -69,52 +71,61 @@ void mythread::readyRead()
     if(stuff=="REG\n") // set client username internal to the thread. No need to do much else.
     {
         if (conn == 1) {
-//            socket->write("ACK");
-            if(-1==socket->write("ACK"))//to finalize name registration.
+            if(-1==socket->write("ACK"))                                //reg
             {
                     qDebug() << "error2";
             }
-
             socket->flush();
             msgTemp.clear();
             socket->waitForReadyRead();
             stuff=socket->readAll();
             name=stuff;
-            qDebug() << "itt kell az L";
-//            if(-1==socket->write("ACK"))//to finalize name registration.
-//            {
-//                    qDebug() << "error2";
-//            }
-//            socket->waitForReadyRead();
 
-            msgTemp.append("L");
+            msgTemp.append("L");                                        //login
             msgTemp.append(QString::number(playerid).at(0));
-            socket->write(msgTemp.toUtf8());
-            socket->flush();
-        } else if (conn == 0){
-            socket->write("EXIT");
-            socket->flush();
-            socket->waitForReadyRead();
-            if(-1==socket->write("EXIT"))//to finalize name registration.
+            msgTemp.append(QString::number(maxplayer).at(0));
+            if (playerid == maxplayer) {                                //ha elérjük a maxplayert, akkor osztunk
+                        qDebug() << "maxplayer reached!";
+/*                    for (int i=0; i<maxplayer+1; i++) {
+
+
+                        lock->lock(); //I'm messing with the shared memory here... make sure to lock
+                        tempData.setData(msgTemp.toUtf8());
+                        tempData.setFrame(*sysFrame);
+                        sendData->append(tempData);
+                        (*sysFrame)++;
+                        lock->unlock();
+
+
+                        qDebug() << socketDescriptor << "socketdesc";
+                        msgTemp.clear();
+                        msgTemp.append(table->Send(i));
+                        qDebug() << table->Send(i)<< "tablesend_I";
+
+                    }
+//               msgTemp.append(table->Send(playerid));
+*/
+                }
+
+            } else if (conn == 0){
+            if(-1==socket->write("EXIT"))
             {
                     qDebug() << "error3";
             }
+            socket->flush();
+            socket->waitForReadyRead();
+
         }
 
-    } //done...... much easier than before... wow.
+    }
 
 
     if(stuff=="MSG\n") //client would like to send a message.
     {
 
-        //socket->write("ACK\n");
-        //socket->flush();
-        qDebug() << socket->isOpen();
         socket->waitForReadyRead();
         stuff=socket->readAll();
-        //socket->waitForReadyRead();
         msgTemp.clear();
-        qDebug() << stuff;
         QString str;
         str.clear();
         char *command = stuff.data();
@@ -144,18 +155,12 @@ void mythread::readyRead()
         }else {
             qDebug() << "update";
         }
-//        str.append(table->Send(table->currentPlayer));
+
         str.append((table->Send(playerid)));
         msgTemp.append(str);
     }
 
-/*        msgTemp.clear();
-        msgTemp = '<';
-        msgTemp.append(name);
-        msgTemp.append(">: ");
-        msgTemp.append(stuff);
-        msgTemp.append('\n');
-*/
+
         lock->lock(); //I'm messing with the shared memory here... make sure to lock
 
         tempData.setData(msgTemp.toUtf8());
@@ -191,6 +196,8 @@ void mythread::disconnected()
     }
     lock->unlock();
     socket->deleteLater();
+
+ //   myserver::decrCntP();                //lecsökkentem a bentlévő kliensek számát
     mythread::exit();
 }
 
@@ -210,7 +217,6 @@ void mythread::readyWrite()
         {
             response = it->getData();
             socket->write(response.toUtf8());
-            qDebug() << socketDescriptor<<"-ak küldtem üzenetet";
             socket->flush();
             //doing an ACK to synchronize when the client expects more data.
             this->frame++;
@@ -230,6 +236,7 @@ void mythread::readyWrite()
         {
             //found this thread
             fit->frame = this->frame;
+
         }
     }
     lock->unlock();

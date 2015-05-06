@@ -18,7 +18,7 @@ public:
     explicit myserver(QObject *parent = 0);
     ~myserver();
     void StartServer();
-
+    void decrCntP();
 
 signals:
 
@@ -30,7 +30,8 @@ protected:
 private:
     QTimer *timer;
     QMutex *lock;
-    int test;
+//    int cntP;                //count of Players
+
 //    Table *table;
 
 };

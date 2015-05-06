@@ -39,6 +39,7 @@ private:
     std::vector<int> handSize;
     int player_id;
 
+
 };
 
 #endif // MAINWINDOW_H

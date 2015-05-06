@@ -28,6 +28,7 @@ public:
     void setUno(bool b);
     bool action;
     bool uno;
+    int nxtP=-1;
 };
 
 #endif // TABLE_H

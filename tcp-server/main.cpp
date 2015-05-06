@@ -8,13 +8,4 @@ int main(int argc, char *argv[])
     return a.exec();
 
 }
-/*#include <table.h>
-#include <menu.h>
-int main()
-{
-    Table T;
-    T.Deal();
-    Menu M;
-    M.start(T);
-}
-*/
+
