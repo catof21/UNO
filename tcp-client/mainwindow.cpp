@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     serverPort = new int;
     userName = new QString;
     table = new Table;
+    player_id = -1;
     startDialog start(serverAddr, serverPort, userName,this);
     start.setModal(true);
     start.exec();
@@ -67,61 +68,39 @@ void MainWindow::clientConnected()
    socket->waitForReadyRead();
    socket->readAll();
    m_bUserNameSend = true;
-   ui->textBrowser->setText("U(pdate) | P(lay) | D(raw) | X(UNO)");
+//   ui->textBrowser->setText("U(pdate) | P(lay) | D(raw) | X(UNO)");
+//   ui->textBrowser->append(userName->toUtf8());
 }
 
 
-/*bool MainWindow::Connect()
-{
-    bool flag=false;
-    QString tempString;
-    socket->connectToHost(*serverAddr,*serverPort);
-    if(!socket->waitForConnected())
-       flag = false;
-    else flag=true;
-    if(flag)
-    {//attempt to register user with name
-        socket->write("REG\n");
-        socket->flush();
-        socket->waitForBytesWritten(3000);
-        socket->waitForReadyRead();
-        tempString = socket->readAll();
-        if(tempString == "ACK")
-        {
-            socket->write(userName->toUtf8());
-            socket->flush();
-            tempString.clear();
-            socket->waitForReadyRead();
-            tempString = socket->readAll();
-            if(tempString=="ACK")
-            {
-                return true;
-            }
-            else return false;
-        }
-        else return false;
-       }
-    else return false;
-}*/
 
 
 
-/*void MainWindow::readyRead()
-{
-    //client has now been told by the socket that there is data to be ready that is not a part of the sending or registering. cool
-    QString temp,browsTemp;
-    temp=socket->readAll();
-    ui->textBrowser->append(temp);
-    ui->textBrowser->repaint();
-    temp.clear();
-}*/
 
 void MainWindow::readyRead()
 {
 // handle the readyRead signal
    QString tempString = socket->readAll();
+   if (tempString == "ACK") {
+        qDebug() << "ACK kapott";
+        ui->textBrowser->setText("U(pdate) | P(lay) | D(raw) | X(UNO)");
+        ui->textBrowser->append(userName->toUtf8());
 
-   if (tempString != "ACK") {
+   } else if (tempString.startsWith(QChar('L'))){
+       qDebug() << "Logint kapok";
+       qDebug() << tempString.at(1) << "player_id";
+       if (player_id == -1) {
+           player_id = tempString.at(1).digitValue();
+       }
+       qDebug() << "valid player_id"<< player_id;
+   } else if (tempString == "EXIT") {
+       ui->textBrowser->setText("Maximális játékosszám elérve");
+       QCoreApplication::quit();
+   }
+
+//   if (tempString != "ACK") {
+     else {
+
           table->Hand.erase(table->Hand.begin(), table->Hand.end());
           ui->textBrowser->clear();
           ui->textBrowser->append("U(pdate) | P(lay) | D(raw) | X(UNO)");
@@ -146,8 +125,9 @@ void MainWindow::readyRead()
               ui->textBrowser->append(table->playedCard.getColor2());
           }
           ui->textBrowser->append("\nKézben lévő lapok:");
+
           Card c;
-           for(int i=4;i<tempString.length();i=i+3) {
+           for(int i=5;i<tempString.length();i=i+3) {
                c.setNumber(tempString.at(i));
                c.setColor(tempString.at(i+1));
                c.setColor2(tempString.at(i+2));
@@ -160,10 +140,10 @@ void MainWindow::readyRead()
                table->setUno(true);
            }
 
-   } else {
-    ui->textBrowser->append(tempString);
    }
-   qDebug() << "readyread" << tempString;
+   qDebug() << "readyread legvége" << tempString;
+   tempString.clear();
+
    ui->textBrowser->repaint();
 }
 void MainWindow::on_pushButton_clicked()

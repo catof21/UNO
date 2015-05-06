@@ -274,6 +274,8 @@ QString Table::Send(int player_id){
         data.append("0");
     }
     qDebug() << data;
+    //QChar c((short) player_id);
+    data.append(QString::number(player_id).at(0));
     for(std::list<Card>::iterator i = Hands[player_id].begin(); i != Hands[player_id].end(); i++){
         Card c = *i;
         data.append(c.getNumber());

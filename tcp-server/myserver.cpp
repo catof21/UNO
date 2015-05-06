@@ -48,15 +48,22 @@ void myserver::StartServer()
 
 void myserver::incomingConnection(int socketDescriptor)
 {
-    qDebug() << socketDescriptor << "Connecting ...";
-    mythread *thread = new mythread(lock, sysFrame,socketDescriptor,data, frameList,table,this);
-    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-
-    thread->start();
-    test++;
-    if(test==MAXPLAYER){
+    if(test<MAXPLAYER){
+        qDebug() << socketDescriptor << "Connecting ...";
+        mythread *thread = new mythread(lock, sysFrame,socketDescriptor,data, frameList,table,this,test,1);
+        connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+        thread->start();
+        test++;
         //TODO: fork()
+    } else {
+        qDebug() << "maxplayer reached";
+        qDebug() << socketDescriptor << "Connecting ...";
+        mythread *thread = new mythread(lock, sysFrame,socketDescriptor,data, frameList,table,this,test,0);
+        connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+        thread->start();
+
     }
+
     qDebug() << test <<"test_cnt";
 
 }

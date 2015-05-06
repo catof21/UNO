@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <qtimer.h>
 #include <table.h>
+#include <vector>
 
 
 namespace Ui {
@@ -35,6 +36,8 @@ private:
     QTcpSocket *socket;
     bool m_bUserNameSend;
     Table *table;
+    std::vector<int> handSize;
+    int player_id;
 
 };
 
