@@ -1,4 +1,4 @@
-#include "cli_socket.h"
+/*#include "cli_socket.h"
 
 cli_socket::cli_socket(QObject *parent) :
     QObject(parent)
@@ -42,3 +42,4 @@ void cli_socket::Connect()
     socket->close();
     socket->waitForDisconnected(3000);
 }
+*/

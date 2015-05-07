@@ -9,3 +9,4 @@ public:
     //using this as a struct... I just like objects better
 };
 
+

@@ -23,9 +23,6 @@ QThread(parent)
 void mythread::run()
 {
     //thread starts here
-    //unneeded
-    //QLinkedList<Data>::iterator Dit;
-    //QLinkedList<User>::iterator Uit;
     threadFrame myFrame;
     QTimer *timer = new QTimer(0);
 
@@ -56,9 +53,7 @@ void mythread::run()
 
 
 void mythread::readyRead()
-{ //this will change
-//    int flag=0;
-    QString::iterator it;
+{
     frameData tempData;
     QByteArray stuff = socket->readAll();
     qDebug() << stuff;
@@ -86,25 +81,6 @@ void mythread::readyRead()
             msgTemp.append(QString::number(maxplayer).at(0));
             if (playerid == maxplayer) {                                //ha elérjük a maxplayert, akkor osztunk
                         qDebug() << "maxplayer reached!";
-/*                    for (int i=0; i<maxplayer+1; i++) {
-
-
-                        lock->lock(); //I'm messing with the shared memory here... make sure to lock
-                        tempData.setData(msgTemp.toUtf8());
-                        tempData.setFrame(*sysFrame);
-                        sendData->append(tempData);
-                        (*sysFrame)++;
-                        lock->unlock();
-
-
-                        qDebug() << socketDescriptor << "socketdesc";
-                        msgTemp.clear();
-                        msgTemp.append(table->Send(i));
-                        qDebug() << table->Send(i)<< "tablesend_I";
-
-                    }
-//               msgTemp.append(table->Send(playerid));
-*/
                 }
 
             } else if (conn == 0){
@@ -168,9 +144,7 @@ void mythread::readyRead()
         sendData->append(tempData);
         (*sysFrame)++;
         lock->unlock();
-        //socket->write("ACK");
-        //socket->flush();
-    } //much easier.
+    }
 
 
 
@@ -196,8 +170,6 @@ void mythread::disconnected()
     }
     lock->unlock();
     socket->deleteLater();
-
- //   myserver::decrCntP();                //lecsökkentem a bentlévő kliensek számát
     mythread::exit();
 }
 
@@ -209,7 +181,6 @@ void mythread::readyWrite()
     QLinkedList<frameData>::iterator it;
     QLinkedList<threadFrame>::iterator fit;
     QString response;
-    bool flag=false;
     lock->lock();
     for(it=sendData->begin();it!=sendData->end();it++)
     {
@@ -220,15 +191,9 @@ void mythread::readyWrite()
             socket->flush();
             //doing an ACK to synchronize when the client expects more data.
             this->frame++;
-            flag=true; //this flag tells if data was ever sent... because if none was ever sent, then there's no reason for me to be randomly bothering the client with the finish that is below.
         }
     }
-    //if(flag)
-    //{
-    //	flag=false;
-    //	socket->write("FIN");
-    //	socket->flush();
-//	}
+
     //have to update system level frame number. otherwise issues.
     for(fit=sysFrameList->begin();fit!=sysFrameList->end();fit++)
     {
@@ -241,9 +206,6 @@ void mythread::readyWrite()
     }
     lock->unlock();
 }
-
-
-
 
 
 void mythread::timeUp() //probably does not need to be remade.

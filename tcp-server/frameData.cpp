@@ -33,3 +33,4 @@ int frameData::getFame()
 {
     return frame;
 }
+

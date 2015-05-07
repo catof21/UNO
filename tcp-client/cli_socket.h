@@ -1,4 +1,4 @@
-#ifndef CLI_SOCKET_H
+/*#ifndef CLI_SOCKET_H
 #define CLI_SOCKET_H
 
 #include <QObject>
@@ -22,3 +22,4 @@ private:
 };
 
 #endif // CLI_SOCKET_H
+*/
