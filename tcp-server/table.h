@@ -38,7 +38,7 @@ public:
     void Draw(int player_id);
     void DrawEnough(int player_id);
     void Play(int player_id, QChar c, QChar n, QChar c2);
-    void PlayClient();
+//    void PlayClient();
     void Deal(int cnt_cards, int cnt_players);
     void SayUno(int player_id);
     void PrintTable();

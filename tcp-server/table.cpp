@@ -3,14 +3,14 @@
 #include <QDebug>
 
 #define RANDOM_INTREVAL 4500;
-#define DIRSTRIBUTED_CARD_NORMAL_GAME 2;
+#define DIRSTRIBUTED_CARD_NORMAL_GAME 7;
 #define DIRSTRIBUTED_CARD_TEST_GAME 3;
 
 using namespace std;
 
 Table::Table(int cnt_players)
 {
-    std::cout<<"Beleptem a Table konstruktotraba"<<std::endl;
+    //std::cout<<"Beleptem a Table konstruktotraba"<<std::endl;
     numberOfDrawCards=1;
     action = false;
     course=1;
@@ -26,9 +26,9 @@ Table::~Table()
 
 void Table::Load(int cnt_players)
 {
-   // qDebug() <<"Normal jatek? [Y/N]";
-    char gameType='Y';                      //for debug only!
-   // cin>>gameType;
+    qDebug() <<"Normal jatek? [Y/N]";
+    char gameType;                      //for debug only!
+    cin>>gameType;
     std::map<int, Card> deck;               //ebbe kerülnek véletlenszerűen a lapok
     srand(time(NULL));                      //elindul a randomizálás
     char numbers[13]={'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'S', 'D', 'R'};

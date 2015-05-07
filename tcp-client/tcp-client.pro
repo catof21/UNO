@@ -24,7 +24,6 @@ SOURCES += main.cpp \
     table.cpp
 
 HEADERS += \
-    cli_socket.h \
     startdialog.h \
     mainwindow.h \
     card.h \
