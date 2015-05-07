@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "unistd.h"
 
-#define MAXPLAYER 2
+#define MAXPLAYER 3
 
 using namespace::std;
 QLinkedList<frameData> *data;

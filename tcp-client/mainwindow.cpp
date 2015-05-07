@@ -117,80 +117,101 @@ void MainWindow::readyRead()
        QCoreApplication::quit();
 
    } else {
+       ui->textBrowser->clear();
+         QString hexa;
+         hexa.append(tempString.at(5));
+         hexa.append(tempString.at(6));
+         int nhex = hexa.toInt(0,16);
+         if(nhex==0){
+             table->nxtP=100;
+             if(player_id==tempString.at(4).digitValue()){
+                 ui->textBrowser->setText("GRATULÁLUNK!");
+                 ui->textBrowser->append("");
+                 ui->textBrowser->append("NYERTÉL!");
+             }else{
+                 QString menu;
+                 ui->textBrowser->setText("A JATEKNAK VEGE");
+                 ui->textBrowser->append("");
+                 menu.append("A jatekot a(z) ");
+                 menu.append(QString::number(tempString.at(4).digitValue()+1));
+                 menu.append(". jatekos nyerte ");
+                 ui->textBrowser->append(menu);
+             }
+         }else{
+              ui->textBrowser->clear();
+              QString menu;
+              menu.append("Hello ");
+              menu.append(userName->toUtf8());
+              menu.append(", Te vagy a ");
+              menu.append(QString::number(player_id+1));
+              menu.append(". jatekos");
+              ui->textBrowser->setText(menu);
+              ui->textBrowser->append("P(lay) | D(raw) | U(no)");
+              table->playedCard.setNumber(tempString.at(0));                    //asztalon levo szama
+              table->playedCard.setColor(tempString.at(1));                     //asztalon levo szine
+              table->playedCard.setColor2(tempString.at(2));                    //asztalon levo szin keres
+              QChar a = tempString.at(3);                                       //action ?
+              if ( a == '0') {
+                  table->action=false;
+              } else {
+                  table->action=true;
+              }
+              QString hexa;
+              hexa.append(tempString.at(5));
+              hexa.append(tempString.at(6));
+              int nhex = hexa.toInt(0,16);
+              handSize[tempString.at(4).digitValue()]=nhex;
+              table->nxtP=tempString.at(7).digitValue();
+              if (tempString.at(4).digitValue() == player_id) {                              //PID
 
-          ui->textBrowser->clear();
-          QString menu;
-          menu.append("Hello ");
-          menu.append(userName->toUtf8());
-          menu.append(", Te vagy a ");
-          menu.append(QString::number(player_id+1));
-          menu.append(". jatekos");
-          ui->textBrowser->setText(menu);
-          ui->textBrowser->append("P(lay) | D(raw) | U(no)");
-          table->playedCard.setNumber(tempString.at(0));                    //asztalon levo szama
-          table->playedCard.setColor(tempString.at(1));                     //asztalon levo szine
-          table->playedCard.setColor2(tempString.at(2));                    //asztalon levo szin keres
-          QChar a = tempString.at(3);                                       //action ?
-          if ( a == '0') {
-              table->action=false;
-          } else {
-              table->action=true;
-          }
-          QString hexa;
-          hexa.append(tempString.at(5));
-          hexa.append(tempString.at(6));
-          int nhex = hexa.toInt(0,16);
-          handSize[tempString.at(4).digitValue()]=nhex;
-          table->nxtP=tempString.at(7).digitValue();
-          if (tempString.at(4).digitValue() == player_id) {                              //PID
+    /*                  qDebug() << tempString.at(0);
+                      qDebug() << tempString.at(1);
+                      qDebug() << tempString.at(2);
+                      qDebug() << tempString.at(3);
+                      qDebug() << tempString.at(4)<< "PID";
+                      qDebug() << tempString.at(5);
+                      qDebug() << tempString.at(6)<< "LAPSZ";
+                      qDebug() << tempString.at(7)<< "kijon"; */
+                      table->Hand.erase(table->Hand.begin(), table->Hand.end());
 
-/*                  qDebug() << tempString.at(0);
-                  qDebug() << tempString.at(1);
-                  qDebug() << tempString.at(2);
-                  qDebug() << tempString.at(3);
-                  qDebug() << tempString.at(4)<< "PID";
-                  qDebug() << tempString.at(5);
-                  qDebug() << tempString.at(6)<< "LAPSZ";
-                  qDebug() << tempString.at(7)<< "kijon"; */
-                  table->Hand.erase(table->Hand.begin(), table->Hand.end());
+                      Card c;
+                       for(int i=8;i<tempString.length();i=i+3) {
+                           c.setNumber(tempString.at(i));
+                           c.setColor(tempString.at(i+1));
+                           c.setColor2(tempString.at(i+2));
+                           table->Hand.push_back(c);
+                       }
+                       int i =table->Hand.size();
+                       qDebug() << i;
+                       if(table->Hand.size()==1){
+                           table->setUno(true);
+                       }
+              }
+               for (uint i=0; i<handSize.size();i++) {
+                   if (i!=player_id){
+                        QString ext;
+                        ext.append(QString::number(i+1));
+                        ext.append(". jatekos lapjainak szama: ");
+                        ext.append(QString::number(handSize[i]));
+                        ui->textBrowser->append(ext);
+                    }
+               }
 
-                  Card c;
-                   for(int i=8;i<tempString.length();i=i+3) {
-                       c.setNumber(tempString.at(i));
-                       c.setColor(tempString.at(i+1));
-                       c.setColor2(tempString.at(i+2));
-                       table->Hand.push_back(c);
-                   }
-                   int i =table->Hand.size();
-                   qDebug() << i;
-                   if(table->Hand.size()==1){
-                       table->setUno(true);
-                   }
-          }
-           for (uint i=0; i<handSize.size();i++) {
-               if (i!=player_id){
-                    QString ext;
-                    ext.append(QString::number(i+1));
-                    ext.append(". jatekos lapjainak szama: ");
-                    ext.append(QString::number(handSize[i]));
-                    ui->textBrowser->append(ext);
-                }
-           }
-
-           ui->textBrowser->append("Hívó lap:");
-           ui->textBrowser->append(table->playedCard.Send().toUtf8());
-           if(table->playedCard.getColor()=='W'){
-               ui->textBrowser->append("A hivott szin: ");
-               ui->textBrowser->append(table->playedCard.getColor2());
-           }
-           QString kijon;
-           kijon.append(QString::number(tempString.at(7).digitValue()+1));
-           kijon.append(". jatekos kovetkezik");
-           ui->textBrowser->append(kijon);
-           ui->textBrowser->append("\nKézben lévő lapok:");
-           for(std::list<Card>::iterator i = table->Hand.begin(); i != table->Hand.end(); i++){
-                ui->textBrowser->append(i->Send().toUtf8());
-           }
+               ui->textBrowser->append("Hívó lap:");
+               ui->textBrowser->append(table->playedCard.Send().toUtf8());
+               if(table->playedCard.getColor()=='W'){
+                   ui->textBrowser->append("A hivott szin: ");
+                   ui->textBrowser->append(table->playedCard.getColor2());
+               }
+               QString kijon;
+               kijon.append(QString::number(tempString.at(7).digitValue()+1));
+               kijon.append(". jatekos kovetkezik");
+               ui->textBrowser->append(kijon);
+               ui->textBrowser->append("\nKézben lévő lapok:");
+               for(std::list<Card>::iterator i = table->Hand.begin(); i != table->Hand.end(); i++){
+                    ui->textBrowser->append(i->Send().toUtf8());
+               }
+            }
    }
    qDebug() << "readyread legvége" << tempString;
    tempString.clear();

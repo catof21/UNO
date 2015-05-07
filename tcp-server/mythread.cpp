@@ -153,7 +153,7 @@ void mythread::readyRead()
             }
 
         }else {
-            qDebug() << "update";
+            qDebug() << "update"<<playerid;
         }
 
         str.append((table->Send(playerid)));
